@@ -111,6 +111,7 @@ public class Twitter {
             allTweets.add(users.get(id).getTweets());
         }
         PriorityQueue<Tweet> now = new PriorityQueue<>();
+        // 比较部分或许可以再用一次优先队列
         while (newsFeed.size() < 10) {
             maxTimeStamp = 0;
             lastMaxQueue = null;
