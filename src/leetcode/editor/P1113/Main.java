@@ -4,21 +4,17 @@ import java.util.*;
 
 class Node implements Cloneable {
     int id;
-    PriorityQueue<Integer> out;
-    PriorityQueue<Integer> in;
+    int outCount;
+    List<Integer> in;
 
     Node(int id) {
         this.id = id;
-        out = new PriorityQueue<>();
-        in = new PriorityQueue<>();
+        in = new ArrayList<>();
     }
 
     @Override
     public Object clone() {
         Node other = new Node(this.id);
-        for (int i : out) {
-            other.addOut(i);
-        }
         for (int i : in) {
             other.addIn(i);
         }
@@ -29,30 +25,24 @@ class Node implements Cloneable {
         return in.size();
     }
 
-    public int getCountOut() {
-        return out.size();
-    }
 
-    void addOut(int id) {
-        out.add(id);
-    }
-
-    void removeOut(int id) {
-        out.remove(id);
-    }
 
     void addIn(int id) {
         in.add(id);
     }
 
     void removeIn(int id) {
-        in.remove(id);
+        for (int i = 0; i < in.size(); i++) {
+            if(in.get(i) == id){
+                in.remove(in.get(i));
+            }
+        }
     }
 }
 
 public class Main {
-    public static int getVE(int ve[], PriorityQueue<Integer> in, int cast[]) {
-        int ret = -1;
+    public static int getVE(int ve[], ArrayList<Integer> in, int cast[]) {
+        int ret = 0;
         int temp;
         for (int i : in) {
             temp = ve[i] + cast[i];
@@ -82,19 +72,18 @@ public class Main {
             cast[id] = cin.nextInt();
             int next = cin.nextInt();
             while (next != 0) {
-                graph[next].addOut(id);
+                graph[next].outCount++;
                 graph[id].addIn(next);
                 next = cin.nextInt();
             }
             if (graph[id].getCountIn() == 0) {
-                graph[0].addOut(id);
+                graph[0].outCount++;
                 graph[id].addIn(0);
             }
         }
         graph[size + 1] = new Node(size + 1);
         for (int i = 1; i < size + 1; i++) {
-            if (graph[i].getCountOut() == 0) {
-                graph[i].addOut(size + 1);
+            if (graph[i].outCount == 0) {
                 graph[size + 1].addIn(i);
             }
         }
@@ -119,42 +108,12 @@ public class Main {
                 }
             }
         }
-//        for (int i = 0; i <= size + 1; i++) {
-//            graph[i] = (Node) backup[i].clone();
-//        }
-        // 开始逆拓扑排序
-        /*
-        Queue<Integer> zeroOut = new LinkedList<>();
-        List<Integer> queueOut = new ArrayList<>();
-        visited.clear();
-        zeroOut.add(size + 1);
-        while (!zeroOut.isEmpty()) {
-            int pivot = zeroOut.poll();
-            queueOut.add(pivot);
-            for (int i = pivot - 1; i >= 0; i--) {
-                graph[i].removeOut(pivot);
-                if (graph[i].getCountOut() == 0 && !visited.contains(i)) {
-                    zeroOut.add(i);
-                    visited.add(i);
-                }
-            }
-        }*/
-//        List<Integer> reverseQueue = new ArrayList<>();
-//        for (int i = queue.size() - 1; i >= 0; i--) {
-//            reverseQueue.add(queue.get(i));
-//        }
-        // 初始化表格
-
-
         // 最后要输出的是关键路径的长度
         int ve[] = new int[size + 1 + 1];
         ve[0] = 0;
         for (int i = 1; i <= size + 1; i++) {
-            ve[i] = getVE(ve, backup[i].in, cast);
+            ve[i] = getVE(ve, (ArrayList<Integer>) backup[i].in, cast);
         }
         System.out.println(ve[size + 1]);
-
-//        int vl[] = new int[size + 1 + 1];
-//        return;
     }
 }

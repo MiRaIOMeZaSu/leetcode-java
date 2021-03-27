@@ -1,4 +1,4 @@
-package leetcode.editor._P2676;
+package leetcode.editor.P2676;
 
 
 import java.util.PriorityQueue;

@@ -1,4 +1,4 @@
-package leetcode.editor._P1152;
+package leetcode.editor.P1152;
 
 import java.util.Scanner;
 import java.util.TreeSet;
