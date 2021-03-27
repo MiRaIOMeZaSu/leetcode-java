@@ -1,39 +1,6 @@
 package leetcode.editor.P4017;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
-class Solution {
-    ArrayList<Integer>[] graph;
-    int heads[];
-
-    Solution(ArrayList<Integer>[] graph, int[] heads) {
-        this.graph = graph;
-        this.heads = heads;
-    }
-
-    public int DFS(int current) {
-        if (graph[current].size() == 0) {
-            // 直到生产者时退出
-            return 1;
-        }
-        int count = 0;
-        for (int i = 0; i < graph[current].size(); i++) {
-            count += DFS(graph[current].get(i));
-        }
-        return count;
-    }
-
-    public int solve() {
-        int n = 0;
-        int count = 0;
-        while (heads[n] != 0) {
-            count += DFS(heads[n]);
-            n++;
-        }
-        return count;
-    }
-}
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -42,26 +9,66 @@ public class Main {
         int V = cin.nextInt();
         int E = cin.nextInt();
         ArrayList<Integer> graph[] = new ArrayList[V + 1];
+        ArrayList<Integer> backup[] = new ArrayList[V + 1];
         int in[] = new int[V + 1];
+        int out[] = new int[V + 1];
         for (int i = 1; i < V + 1; i++) {
             graph[i] = new ArrayList<>();
+            backup[i] = new ArrayList<>();
         }
         for (int i = 0; i < E; i++) {
             int A = cin.nextInt();
             int B = cin.nextInt();
-            graph[A].add(B);
+            graph[B].add(A);
+            backup[B].add(A);
             in[B]++;
+            out[A]++;
         }
-        int heads[] = new int[V + 1];
-        int n = 0;
+        // 使用拓扑排序
+        List<Integer> queue = new ArrayList<>();
+        Queue<Integer> zeroIn = new LinkedList<>();
+        List<Integer> ends = new ArrayList<>();
+        List<Integer> heads = new ArrayList<>();
         for (int i = 1; i < V + 1; i++) {
             if (in[i] == 0) {
-                heads[n] = i;
-                n++;
+                zeroIn.add(i);
+                heads.add(i);
+            }
+            if (out[i] == 0) {
+                ends.add(i);
             }
         }
-        Solution solution = new Solution(graph, heads);
-        int count = solution.solve();
-        System.out.printf(String.valueOf(count));
+        int visit[] = new int[V + 1];
+        while (!zeroIn.isEmpty()) {
+            int pivot = zeroIn.poll();
+            queue.add(pivot);
+            for (int i = 1; i < V + 1; i++) {
+                if (graph[i].indexOf(pivot) != -1) {
+                    graph[i].remove(graph[i].get(graph[i].indexOf(pivot)));
+                    if (graph[i].size() == 0 && visit[i] == 0) {
+                        visit[i] = 1;
+                        zeroIn.add(i);
+                    }
+                }
+            }
+        }
+        long dp[] = new long[V + 1];
+        for (int i : heads) {
+            dp[i] = 1;
+        }
+        for (int i : queue) {
+            if (dp[i] == 0) {
+                for (int n : backup[i]) {
+                    dp[i] += dp[n];
+                    dp[i] %= 80112002;
+                }
+            }
+        }
+        int count = 0;
+        for (int i : ends) {
+            count += dp[i];
+            count %= 80112002;
+        }
+        System.out.printf(String.valueOf(count % 80112002));
     }
 }
