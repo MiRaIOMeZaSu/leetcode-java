@@ -1,64 +1,66 @@
 package leetcode.editor.P4017;
 
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    public static void main(String[] args) {
-        // 使用回溯法?拓扑排序?
-        // 使用邻接矩阵
-        Scanner cin = new Scanner(System.in);
-        int V = cin.nextInt();
-        int E = cin.nextInt();
-        List<Short>[] graph = new ArrayList[V + 1];
-        short[] in = new short[V + 1];
-        short[] out = new short[V + 1];
-        for (int i = 1; i < V + 1; i++) {
-            graph[i] = new ArrayList<>();
+//    public static int ret = 0, s = 80112002;
+//    public static int[] rec;
+//    public static Map<Integer, List<Integer>> in = new HashMap<>();
+//    public static Map<Integer, List<Integer>> out = new HashMap<>();
+
+    public static void main(String[] args) throws IOException {
+        int ret = 0, s = 80112002;
+        int[] rec;
+        Map<Integer, List<Integer>> in = new HashMap<>();
+        Map<Integer, List<Integer>> out = new HashMap<>();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StreamTokenizer st = new StreamTokenizer(br);
+        st.nextToken();
+        int n = (int) st.nval;
+        st.nextToken();
+        int m = (int) st.nval;
+        for (int i = 1; i <= n; i++) {
+            //吃谁
+            in.put(i, new ArrayList<>());
+            //被谁吃
+            out.put(i, new ArrayList<>());
         }
-        for (int i = 0; i < E; i++) {
-            short A = cin.nextShort();
-            short B = cin.nextShort();
-            graph[B].add(A);
-            in[B]++;
-            out[A]++;
+        for (int i = 0; i < m; i++) {
+            st.nextToken();
+            int beichi = (int) st.nval;
+            st.nextToken();
+            int chi = (int) st.nval;
+            in.get(chi).add(beichi);
+            out.get(beichi).add(chi);
         }
-        // 使用拓扑排序
-        Queue<Short> zeroIn = new LinkedList<>();
-        List<Short> heads = new ArrayList<>();
-        for (short i = 1; i < V + 1; i++) {
-            if (in[i] == 0) {
-                zeroIn.add(i);
-                heads.add(i);
+        rec = new int[n + 1];
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 1; i <= n; i++) {
+            if (in.get(i).isEmpty()) {
+                rec[i] = 1;
+                q.offer(i);
             }
         }
-        int[] dp = new int[V + 1];
-        for (short i : heads) {
-            dp[i] = 1;
-        }
-        short[] visit = new short[V + 1];
-        int count = 0;
-        while (!zeroIn.isEmpty()) {
-            short pivot = zeroIn.poll();
-            if (dp[pivot] == 0) {
-                for (int n : graph[pivot]) {
-                    dp[pivot] += dp[n];
-                    dp[pivot] %= 80112002;
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+            int size = out.get(cur).size();
+            for (int i = 0; i < size; i++) {
+                // 遍历cur的每个入度
+                int in_i = out.get(cur).get(i);
+                // 在移除in_i的cur出度
+                in.get(in_i).remove((Integer) cur);
+                rec[in_i] += rec[cur];
+                rec[in_i] = rec[in_i] % s;
+                if (in.get(in_i).isEmpty()) {
+                    q.offer(in_i);
                 }
-                if (out[pivot] == 0) {
-                    count += dp[pivot];
-                    count %= 80112002;
-                }
-            }
-            for (short i = 1; i < V + 1; i++) {
-                if (graph[i].contains(pivot)) {
-                    in[i]--;
-                    if (in[i] == 0 && visit[i] == 0) {
-                        visit[i] = 1;
-                        zeroIn.add(i);
-                    }
+                if (out.get(in_i).isEmpty() && in.get(in_i).isEmpty()) {
+                    ret = (ret + rec[in_i]) % s;
                 }
             }
         }
-        System.out.printf(String.valueOf(count % 80112002));
+
+        System.out.println(ret);
     }
 }
