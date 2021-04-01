@@ -36,6 +36,7 @@ public class Solution {
         if (index >= nums.length) {
             return;
         }
+        // 在此处对大于target的nums[index]进行剪枝
         solve(new ArrayList<>(item), index + 1, sum);
         while (sum < target) {
             sum += nums[index];
