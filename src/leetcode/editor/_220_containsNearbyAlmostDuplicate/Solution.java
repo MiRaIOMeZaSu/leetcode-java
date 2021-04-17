@@ -1,17 +1,20 @@
 package leetcode.editor._220_containsNearbyAlmostDuplicate;
 
-import java.util.HashSet;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.HashMap;
+import java.util.List;
 
-class MyInteger {
-    MyInteger(int val, int index) {
+class ListNode {
+    int val;
+    int count;
+    ListNode pre;
+    ListNode next;
+
+    ListNode(int val) {
         this.val = val;
-        this.index = index;
+        count = 1;
+        pre = null;
+        next = null;
     }
-
-    public int val;
-    public int index;
 }
 
 class Solution {
@@ -21,52 +24,70 @@ class Solution {
         if (k == 0 || nums.length <= 1) {
             return false;
         }
-        Queue<MyInteger> greater = new PriorityQueue<>((o1, o2) -> {
-            if (o1.val != o2.val) {
-                return o1.val - o2.val;
-            } else {
-                return o1.index - o2.index;
-            }
-        });
-        Queue<MyInteger> less = new PriorityQueue<>((o1, o2) -> {
-            if (o1.val != o2.val) {
-                return o2.val - o1.val;
-            } else {
-                return o1.index - o2.index;
-            }
-        });
-        HashSet<Integer> toDel = new HashSet<>();
-        // 只往后面看,因为往后走时更后面还会往回比较
-        // nums长度必然大于2
+        HashMap<Integer, ListNode> map = new HashMap<Integer, ListNode>();
+        // 只需要进行一趟插入排序?
+        int size = 1;
+        ListNode node = new ListNode(nums[0]);
+        ListNode head = node;
+        map.put(nums[0], node);
         for (int i = 1; i < nums.length; i++) {
-            // 此处做移动操作
-            while (!greater.isEmpty() && greater.peek().val < nums[i]) {
-                less.add(greater.poll());
-            }
-            while (!less.isEmpty() && less.peek().val > nums[i]) {
-                greater.add(less.poll());
-            }
-            if (nums[i - 1] < nums[i]) {
-                less.add(new MyInteger(nums[i - 1], i - 1));
+            // 进行插入
+            if (head.val > nums[i]) {
+                node = new ListNode(nums[i]);
+                node.next = head;
+                head.pre = node;
+                head = node;
+                map.put(nums[i], node);
             } else {
-                greater.add(new MyInteger(nums[i - 1], i - 1));
+                ListNode curr = head;
+                ListNode pre = head;
+                while (curr != null && curr.val < nums[i]) {
+                    pre = curr;
+                    curr = curr.next;
+                }
+                if (curr == null) {
+                    node = new ListNode(nums[i]);
+                    pre.next = node;
+                    node.pre = pre;
+                    map.put(nums[i], node);
+                } else if (curr.val == nums[i]) {
+                    node = curr;
+                    node.count++;
+                } else {
+                    // 此时必然是curr.val > nums[i]
+                    node = new ListNode(nums[i]);
+                    node.next = curr;
+                    node.pre = curr.pre;
+                    node.next.pre = node;
+                    node.pre.next = node;
+                    map.put(nums[i], node);
+                }
             }
-            while (!greater.isEmpty() && toDel.contains(greater.peek().val)) {
-                toDel.remove(greater.peek().val);
-                greater.poll();
-            }
-            while (!less.isEmpty() && toDel.contains(less.peek().val)) {
-                toDel.remove(less.peek().val);
-                less.poll();
-            }
-            if (!greater.isEmpty() && Math.abs((double) greater.peek().val - (double)nums[i]) <= (double)t) {
+            size++;
+            // 进行比较
+            if ((node.pre != null && Math.abs((double) node.pre.val - (double) node.val) <= t) || node.count > 1) {
                 return true;
             }
-            if (!less.isEmpty() && Math.abs((double)less.peek().val - (double)nums[i]) <= (double)t) {
+            if ((node.next != null && Math.abs((double) node.next.val - (double) node.val) <= t) || node.count > 1) {
                 return true;
             }
-            if (i >= k) {
-                toDel.add(nums[i - k]);
+            // 进行删除
+            if (size >= k + 1) {
+                node = map.get(nums[i - k]);
+                if (map.get(nums[i - k]).count == 1) {
+                    map.remove(nums[i - k]);
+                    if (node.pre != null) {
+                        node.pre.next = node.next;
+                    } else {
+                        head = node.next;
+                    }
+                    if (node.next != null) {
+                        node.next.pre = node.pre;
+                    }
+                } else {
+                    node.count--;
+                }
+                size--;
             }
         }
         return false;
