@@ -1,4 +1,4 @@
-package leetcode.editor._492_reversePairs;
+package leetcode.editor._493_reversePairs;
 
 public class Main {
     public static void main(String[] args) {
