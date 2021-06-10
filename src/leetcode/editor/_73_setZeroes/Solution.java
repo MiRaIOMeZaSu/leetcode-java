@@ -1,34 +1,27 @@
 package leetcode.editor._73_setZeroes;
 
 class Solution {
-    int[][] nums;
     public void setZeroes(int[][] matrix) {
-        // 将1改成2,最后才改成3
-        nums = matrix;
-        solve(0, 0, matrix.length, matrix[0].length);
-    }
-
-    private void solve(int _i, int _j, int len_i, int len_j) {
-        for (int i = _i; i < _i + len_i; i++) {
-            for (int j = _j; j < _j + len_j; j++) {
-                if (nums[i][j] == 0) {
-                    setZero(i, j);
-                    // 左下
-                    solve(i + 1, _j, len_i - i - 1, j);
-                    // 右下
-                    solve(i + 1, j + 1, len_i - i - 1, len_j - j - 1);
-                    return;
+        // 对于O(m + n)的算法,存储了被设置为零的行列
+        // 要求使用原地算法
+        int m = matrix.length;
+        int n = matrix[0].length;
+        boolean col[] = new boolean[n];
+        boolean row[] = new boolean[m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    row[i] = true;
+                    col[j] = true;
                 }
             }
         }
-    }
-
-    private void setZero(int i, int j) {
-        for (int x = 0; x < nums.length; x++) {
-            nums[x][j] = 0;
-        }
-        for (int y = 0; y < nums[0].length; y++) {
-            nums[i][y] = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (col[j] || row[i]) {
+                    matrix[i][j] = 0;
+                }
+            }
         }
     }
 }
