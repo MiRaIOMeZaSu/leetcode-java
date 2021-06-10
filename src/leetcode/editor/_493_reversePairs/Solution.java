@@ -2,17 +2,84 @@ package leetcode.editor._493_reversePairs;
 
 import java.util.*;
 
-class ListNode {
-    int val;
+class Tree {
+    int treeArr[];
+    int size;
     int count;
-    boolean isPivot = false;
-    ListNode next = null;
-    ListNode pre = null;
 
-    ListNode(int x, boolean y) {
-        this.val = x;
-        this.count = 0;
-        this.isPivot = y;
+    Tree(int count) {
+        this.count = count;
+        size = count;
+        // 懒得考虑是2倍还是4倍
+        size *= 4;
+        treeArr = new int[size];
+    }
+
+    int getRangeCount(int currStart, int currEnd, int targetStart, int targetEnd, int k) {
+        if (currStart >= targetStart && currEnd <= targetEnd) {
+            return treeArr[k];
+        } else if (currStart > targetEnd || currEnd < targetStart) {
+            return 0;
+        }
+        int div = (currStart + currEnd) >> 1;
+        int a = getRangeCount(currStart, div, targetStart, targetEnd, k * 2 + 1);
+        int b = getRangeCount(div + 1, currEnd, targetStart, targetEnd, k * 2 + 2);
+        return a + b;
+    }
+
+    void _addNum(int currStart, int currEnd, int num, int k) {
+        if (num > currEnd || num < currStart) {
+            return;
+        }
+        treeArr[k] += 1;
+        if (currStart == currEnd) {
+            return;
+        }
+        int div = (currStart + currEnd) >> 1;
+        _addNum(currStart, div, num, k * 2 + 1);
+        _addNum(div + 1, currEnd, num, k * 2 + 2);
+    }
+
+    void addNum(int num) {
+        _addNum(0, count, num, 0);
+    }
+}
+
+class SpecialTree extends Tree {
+    HashMap<Integer, Integer> map;
+
+    SpecialTree(int count, HashMap<Integer, Integer> map) {
+        super(count);
+        this.map = map;
+    }
+
+    int _getRangeCountSpecial(int currStart, int currEnd, int targetStart, int targetEnd, int k) {
+        currStart = map.get(currStart);
+        currEnd = map.get(currEnd);
+        targetStart = map.get(targetStart);
+        targetEnd = map.get(targetEnd);
+        return getRangeCount(currStart, currEnd, targetStart, targetEnd, k);
+    }
+
+    int getRangeCountSpecial(int targetStart, int targetEnd) {
+        targetStart = map.get(targetStart);
+        targetEnd = map.get(targetEnd);
+        return getRangeCount(0, count, targetStart, targetEnd, 0);
+    }
+
+    int getLowerCount(int targetEnd) {
+        targetEnd = map.get(targetEnd) - 1;
+        return getRangeCount(0, count, 0, targetEnd, 0);
+    }
+
+    int getHigherCount(int targetStart) {
+        targetStart = map.get(targetStart) + 1;
+        return getRangeCount(0, count, targetStart, count, 0);
+    }
+
+    void addNumSpecial(int num) {
+        num = map.get(num);
+        _addNum(0, count, num, 0);
     }
 }
 
@@ -22,65 +89,44 @@ class Solution {
         // 数字的大小不限!
         // 数组长度最长为50000
         // 实际是可以实现线段树的(需要十万空间
-        int ret = 0;
-        HashMap<Integer, ListNode> map = new HashMap<>(60);
-        List<Integer> list = new ArrayList<>();
+        // 应该直接获取范围而避免一个一个加和!
+        // 前往后依次构造树并查询
+
+        List<Integer> arr = new ArrayList<>();
+        HashMap<Integer, Integer> map = new HashMap<>();
         for (int i = 0; i < nums.length; i++) {
             int num = nums[i];
-            if (!map.containsKey(num)) {
-                map.put(num, new ListNode(num, false));
-                list.add(num);
+            long bigNum = num;
+            int pivot = 3;
+            if (bigNum * 2 > Integer.MAX_VALUE || bigNum * 2 < Integer.MIN_VALUE) {
+                pivot--;
             }
-            map.get(num).count++;
-            int tempNum = num >> 1;
-            if (!map.containsKey(tempNum)) {
-                list.add(tempNum);
-                map.put(tempNum, new ListNode(tempNum, true));
-            } else {
-                map.get(tempNum).isPivot = true;
-            }
-        }
-        // 要寻找的是一个越小越好的数
-        list.sort(Comparator.naturalOrder());
-        for (int i = 0; i < list.size(); i++) {
-            // 倒序构造列表?
-            // 使用双向便于链表更新?
-            ListNode temp = map.get(list.get(i));
-            if (i - 1 >= 0) {
-                temp.next = map.get(list.get(i - 1));
-            }
-            if (i + 1 < list.size()) {
-                temp.pre = map.get(list.get(i + 1));
-            }
-        }
-        for (int i = 0; i < nums.length; i++) {
-            int num = nums[i];
-            ListNode temp = map.get(num);
-            temp.count--;
-            if (temp.count == 0) {
-                if (!temp.isPivot || (temp.isPivot && !map.containsKey(num * 2) && !map.containsKey(num * 2 + 1))) {
-                    if (temp.pre != null) {
-                        temp.pre.next = temp.next;
-                        if (temp.next != null) {
-                            temp.next.pre = temp.pre;
-                        }
-                    } else {
-                        if (temp.next != null) {
-                            temp.next.pre = null;
-                        }
-                    }
+            // 此处处理溢出
+            for (int j = 1; j < pivot; j++) {
+                int key = num * j;
+                if (!map.containsKey(key)) {
+                    map.put(key, 0);
+                    arr.add(key);
                 }
             }
-            int target = num >> 1;
-            if ((num | 1) == num) {
-                // num为奇数,target可以包含
-                ret += map.get(target).count;
+        }
+        arr.sort(Comparator.naturalOrder());
+        for (int i = 0; i < arr.size(); i++) {
+            map.put(arr.get(i), i);
+        }
+        SpecialTree tree = new SpecialTree(arr.size() + 1, map);
+        tree.addNumSpecial(nums[0]);
+        int ret = 0;
+        for (int i = 1; i < nums.length; i++) {
+            int num = nums[i];
+            long bigNum = num;
+            if (bigNum * 2 < Integer.MIN_VALUE) {
+                // 负数溢出
+                ret+=i;
+            } else if (bigNum * 2 < Integer.MAX_VALUE) {
+                ret += tree.getHigherCount(num * 2);
             }
-            ListNode curr = map.get(target).next;
-            while (curr != null) {
-                ret += curr.count;
-                curr = curr.next;
-            }
+            tree.addNumSpecial(num);
         }
         return ret;
     }
