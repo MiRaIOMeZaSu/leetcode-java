@@ -5,32 +5,30 @@ class Solution {
     public void setZeroes(int[][] matrix) {
         // 将1改成2,最后才改成3
         nums = matrix;
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
-                if (matrix[i][j] == 0) {
-                    solve(i, j);
-                }
-            }
-        }
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
-                if (matrix[i][j] == 2) {
-                    matrix[i][j] = 0;
+        solve(0, 0, matrix.length, matrix[0].length);
+    }
+
+    private void solve(int _i, int _j, int len_i, int len_j) {
+        for (int i = _i; i < _i + len_i; i++) {
+            for (int j = _j; j < _j + len_j; j++) {
+                if (nums[i][j] == 0) {
+                    setZero(i, j);
+                    // 左下
+                    solve(i + 1, _j, len_i - i - 1, j);
+                    // 右下
+                    solve(i + 1, j + 1, len_i - i - 1, len_j - j - 1);
+                    return;
                 }
             }
         }
     }
 
-    private void solve(int i, int j) {
+    private void setZero(int i, int j) {
         for (int x = 0; x < nums.length; x++) {
-            if (nums[x][j] == 1) {
-                nums[x][j] = 2;
-            }
+            nums[x][j] = 0;
         }
         for (int y = 0; y < nums[0].length; y++) {
-            if (nums[i][y] == 1) {
-                nums[i][y] = 2;
-            }
+            nums[i][y] = 0;
         }
     }
 }
