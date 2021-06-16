@@ -3,6 +3,7 @@ package leetcode.editor._1117_H2O;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class H2O {
+//    private Object lock;
     AtomicInteger H = new AtomicInteger(0);
     AtomicInteger O = new AtomicInteger(0);
     AtomicInteger outPutH = new AtomicInteger(0);
@@ -16,35 +17,33 @@ class H2O {
     }
 
     public void hydrogen(Runnable releaseHydrogen) throws InterruptedException {
-        H.incrementAndGet();
-        while (true) {
-            while (H.get() + outPutH.get() < 2 || O.get() < 1) {
-                Thread.yield();
+        synchronized (this) {
+            H.incrementAndGet();
+            this.notifyAll();
+            while ((H.get() + outPutH.get() < 2 || O.get() < 1)&&
+                    !(outPutH.get() < 2 && outPutO.get() == 0)) {
+                this.wait();
             }
-            if (outPutH.get() < 2 && outPutO.get() == 0) {
-                outPutH.incrementAndGet();
-                releaseHydrogen.run();
-                break;
-            }
+            outPutH.incrementAndGet();
+            releaseHydrogen.run();
         }
     }
 
     public void oxygen(Runnable releaseOxygen) throws InterruptedException {
-        O.incrementAndGet();
-        while (true) {
-            while (H.get() + outPutH.get() < 2 || O.get() < 1) {
-                Thread.yield();
+        synchronized (this) {
+            O.incrementAndGet();
+            this.notifyAll();
+            while ((H.get() + outPutH.get() < 2 || O.get() < 1) &&
+                    !(outPutH.get() == 2 && outPutO.getAndIncrement() == 0)) {
+                this.wait();
             }
-            if (outPutH.get() == 2 && outPutO.getAndIncrement() == 0) {
-                // releaseOxygen.run() outputs "O". Do not change or remove this line.
-                releaseOxygen.run();
-                H.decrementAndGet();
-                H.decrementAndGet();
-                O.decrementAndGet();
-                outPutH.set(0);
-                outPutO.set(0);
-                break;
-            }
+            O.decrementAndGet();
+            H.decrementAndGet();
+            H.decrementAndGet();
+            // releaseOxygen.run() outputs "O". Do not change or remove this line.
+            releaseOxygen.run();
+            outPutH.set(0);
+            outPutO.set(0);
         }
     }
 }
