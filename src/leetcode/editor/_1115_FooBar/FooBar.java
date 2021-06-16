@@ -1,34 +1,34 @@
 package leetcode.editor._1115_FooBar;
 
+import java.util.concurrent.Semaphore;
+
 class FooBar {
     private int n;
-    private volatile boolean flag = false;
-
+    Semaphore semaphore1,semaphore2;
     public FooBar(int n) {
         this.n = n;
+        semaphore1 = new Semaphore(0);
+        semaphore2 = new Semaphore(0);
     }
 
     public void foo(Runnable printFoo) throws InterruptedException {
 
         for (int i = 0; i < n; i++) {
-            if (flag) {
-                Thread.yield();
-            }
+
             // printFoo.run() outputs "foo". Do not change or remove this line.
             printFoo.run();
-            flag = true;
+            semaphore2.release();
+            semaphore1.acquire();
         }
     }
 
     public void bar(Runnable printBar) throws InterruptedException {
 
         for (int i = 0; i < n; i++) {
-            if (!flag) {
-                Thread.yield();
-            }
+            semaphore2.acquire();
             // printBar.run() outputs "bar". Do not change or remove this line.
             printBar.run();
-            flag = false;
+            semaphore1.release();
         }
     }
 }
