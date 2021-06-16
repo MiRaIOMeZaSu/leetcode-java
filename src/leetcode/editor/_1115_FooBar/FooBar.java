@@ -4,31 +4,33 @@ import java.util.concurrent.Semaphore;
 
 class FooBar {
     private int n;
-    Semaphore semaphore1,semaphore2;
+    private volatile boolean flag = false;
+
     public FooBar(int n) {
         this.n = n;
-        semaphore1 = new Semaphore(0);
-        semaphore2 = new Semaphore(0);
     }
 
     public void foo(Runnable printFoo) throws InterruptedException {
 
         for (int i = 0; i < n; i++) {
-
+            while (flag) {
+                Thread.yield();
+            }
             // printFoo.run() outputs "foo". Do not change or remove this line.
             printFoo.run();
-            semaphore2.release();
-            semaphore1.acquire();
+            flag = true;
         }
     }
 
     public void bar(Runnable printBar) throws InterruptedException {
 
         for (int i = 0; i < n; i++) {
-            semaphore2.acquire();
+            while (!flag) {
+                Thread.yield();
+            }
             // printBar.run() outputs "bar". Do not change or remove this line.
             printBar.run();
-            semaphore1.release();
+            flag = false;
         }
     }
 }
