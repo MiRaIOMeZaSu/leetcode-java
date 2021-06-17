@@ -14,9 +14,9 @@ class Solution {
         String pointPattern3 = "[+-]?\\d+\\.\\d+";
         if (Pattern.matches(hasPoint, s)) {
             // 包含小数点
-            return Pattern.matches(pointPattern3 + mainPattern, s) ||
-                    Pattern.matches(pointPattern2 + mainPattern, s)
-                    || Pattern.matches(pointPattern1 + mainPattern, s);
+            return Pattern.matches(pointPattern3 + pattern, s) ||
+                    Pattern.matches(pointPattern2 + pattern, s)
+                    || Pattern.matches(pointPattern1 + pattern, s);
         } else {
             // 不包含小数点
             return Pattern.matches(mainPattern + pattern, s);
