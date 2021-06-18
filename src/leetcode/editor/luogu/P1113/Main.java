@@ -1,4 +1,4 @@
-package leetcode.editor.P1113;
+package leetcode.editor.luogu.P1113;
 
 import java.util.*;
 
