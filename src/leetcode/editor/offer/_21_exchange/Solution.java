@@ -1,4 +1,4 @@
-package leetcode.editor._21_exchange;
+package leetcode.editor.offer._21_exchange;
 
 class Solution {
     public int[] exchange(int[] nums) {
