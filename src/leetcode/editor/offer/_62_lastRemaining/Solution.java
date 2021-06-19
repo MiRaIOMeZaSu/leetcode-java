@@ -23,12 +23,17 @@ class Solution {
         ListNode last = curr;
         curr = head;
         while (curr.next != curr) {
-            for (int i = 1; i < m; i++) {
+            int pivot = m % n;
+            if (pivot < 1) {
+                pivot += n;
+            }
+            for (int i = 1; i < pivot; i++) {
                 last = curr;
                 curr = curr.next;
             }
             last.next = curr.next;
             curr = last.next;
+            n--;
         }
         return curr.val;
     }
