@@ -35,40 +35,27 @@ class Solution {
         if (head == null) {
             return null;
         }
-        Node ret = new Node(head.val);
-        List<Node[]> temp = new ArrayList<>();
-        temp.add(new Node[]{head, ret});
-        visit.put(ret.val, temp);
-        Deque<Node> q = new LinkedList<>();
-        q.push(head);
-        while (!q.isEmpty()) {
-            Node n = q.poll();
-            Node nextN = getNode(n);
-            if (n.next != null) {
-                if (!visit.containsKey(n.next.val)) {
-                    if (!visit.containsKey(n.next.val)) {
-                        visit.put(n.next.val, new ArrayList<>());
-                    }
-                    Node tempNode = new Node(n.next.val);
-                    visit.get(n.next.val).add(new Node[]{n.next, tempNode});
-                    nextN.next = tempNode;
-                    q.push(n.next);
-                } else {
-                    nextN.next = getNode(n.next);
-                }
+        Deque<Node[]> q = new LinkedList<>();
+        Node curr = head;
+        visit.put(curr.val, new ArrayList<>());
+        Node ret = new Node(curr.val);
+        visit.get(curr.val).add(new Node[]{curr, ret});
+        q.push(new Node[]{curr, ret});
+        curr = curr.next;
+        while (curr != null) {
+            if (!visit.containsKey(curr.val)) {
+                visit.put(curr.val, new ArrayList<>());
             }
-            if (n.random != null) {
-                if (!visit.containsKey(n.random.val)) {
-                    if (!visit.containsKey(n.random.val)) {
-                        visit.put(n.random.val, new ArrayList<>());
-                    }
-                    Node tempNode = new Node(n.random.val);
-                    visit.get(n.random.val).add(new Node[]{n.random, tempNode});
-                    nextN.random = tempNode;
-                    q.push(n.random);
-                } else {
-                    nextN.random = getNode(n.random);
-                }
+            Node tempNode = new Node(curr.val);
+            q.peek()[1].next = tempNode;
+            visit.get(curr.val).add(new Node[]{curr, tempNode});
+            q.push(new Node[]{curr, tempNode});
+            curr = curr.next;
+        }
+        while (!q.isEmpty()) {
+            Node[] arr = q.pollLast();
+            if (arr[0].random != null) {
+                arr[1].random = getNode(arr[0].random);
             }
         }
         return ret;
