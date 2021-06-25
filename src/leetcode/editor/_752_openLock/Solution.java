@@ -25,9 +25,9 @@ class Solution {
             dp[Integer.parseInt(deadends[i])] = -1;
         }
         pivot = Integer.parseInt(target);
-        List<Integer> next = getNum(pivot);
+        List<int[]> next = getNum(pivot);
         for (int i = 0; i < next.size(); i++) {
-            solve(next.get(i), 1);
+            solve(next.get(i)[0], 1);
         }
         return dp[0] != 0 ? dp[0] : -1;
     }
@@ -45,33 +45,47 @@ class Solution {
         if (dp[curr] == 0 || num < dp[curr]) {
             dp[curr] = num;
             // 往四边走
-            List<Integer> next = getNum(curr);
+            List<int[]> next = getNum(curr);
             for (int i = 0; i < next.size(); i++) {
-                solve(next.get(i), num + 1);
+                solve(next.get(i)[0], num + 1);
             }
         }
     }
 
-    private List<Integer> getNum(int num) {
-        List<Integer> ret = new ArrayList<>();
+    private List<int[]> getNum(int num) {
+        List<int[]> ret = new ArrayList<>();
+        int bitCount = 0;
+        int temp = num;
+        for (int i = 0; i < 4; i++) {
+            bitCount += temp % 10;
+            temp /= 10;
+        }
         int toPlus = 1;
         int curr = num;
         for (int i = 0; i < 4; i++) {
             int bit = curr % 10;
+            int[] add = new int[2];
             if (bit == 9) {
-                ret.add(num - toPlus * 9);
+                add[0] = num - toPlus * 9;
+                add[1] = bitCount - 9;
             } else {
-                ret.add(num + toPlus);
+                add[0] = num + toPlus;
+                add[1] = bitCount + 1;
             }
+            ret.add(add);
+            int[] minus = new int[2];
             if (bit == 0) {
-                ret.add(num + toPlus * 9);
+                minus[0] = num + toPlus * 9;
+                minus[1] = bitCount + 9;
             } else {
-                ret.add(num - toPlus);
+                minus[0] = num - toPlus;
+                minus[1] = bitCount - 1;
             }
+            ret.add(minus);
             toPlus *= 10;
             curr /= 10;
         }
-        ret.sort(Comparator.naturalOrder());
+        ret.sort((o1, o2) -> o1[1] - o2[1]);
         return ret;
     }
 }
