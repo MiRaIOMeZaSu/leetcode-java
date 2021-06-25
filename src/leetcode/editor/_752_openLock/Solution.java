@@ -1,10 +1,7 @@
 package leetcode.editor._752_openLock;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 class Solution {
     int[] dp = new int[10000];
@@ -24,15 +21,22 @@ class Solution {
             }
             dp[Integer.parseInt(deadends[i])] = -1;
         }
+        Queue<int[]> q = new PriorityQueue<>((o1, o2) -> o1[1] - o2[1]);
         pivot = Integer.parseInt(target);
+        int pivotBitCount = getNumBitCount(pivot);
         List<int[]> next = getNum(pivot);
-        for (int i = 0; i < next.size(); i++) {
-            solve(next.get(i)[0], 1);
+        q.addAll(next);
+        while (!q.isEmpty()) {
+            int[] temp = q.poll();
+            if (temp[1] > pivotBitCount + 4) {
+                break;
+            }
+            solve(temp[0], dp[temp[2]] + 1, q);
         }
         return dp[0] != 0 ? dp[0] : -1;
     }
 
-    private void solve(int curr, int num) {
+    private void solve(int curr, int num, Queue<int[]> q) {
         if (curr == pivot) {
             return;
         }
@@ -46,25 +50,19 @@ class Solution {
             dp[curr] = num;
             // 往四边走
             List<int[]> next = getNum(curr);
-            for (int i = 0; i < next.size(); i++) {
-                solve(next.get(i)[0], num + 1);
-            }
+            q.addAll(next);
         }
     }
 
     private List<int[]> getNum(int num) {
         List<int[]> ret = new ArrayList<>();
-        int bitCount = 0;
-        int temp = num;
-        for (int i = 0; i < 4; i++) {
-            bitCount += temp % 10;
-            temp /= 10;
-        }
+        int bitCount = getNumBitCount(num);
         int toPlus = 1;
         int curr = num;
         for (int i = 0; i < 4; i++) {
             int bit = curr % 10;
-            int[] add = new int[2];
+            int[] add = new int[3];
+            add[2] = num;
             if (bit == 9) {
                 add[0] = num - toPlus * 9;
                 add[1] = bitCount - 9;
@@ -73,7 +71,8 @@ class Solution {
                 add[1] = bitCount + 1;
             }
             ret.add(add);
-            int[] minus = new int[2];
+            int[] minus = new int[3];
+            minus[2] = num;
             if (bit == 0) {
                 minus[0] = num + toPlus * 9;
                 minus[1] = bitCount + 9;
@@ -85,7 +84,16 @@ class Solution {
             toPlus *= 10;
             curr /= 10;
         }
-        ret.sort((o1, o2) -> o1[1] - o2[1]);
+        // ret.sort((o1, o2) -> o1[1] - o2[1]);
         return ret;
+    }
+
+    private int getNumBitCount(int num) {
+        int bitCount = 0;
+        for (int i = 0; i < 4; i++) {
+            bitCount += num % 10;
+            num /= 10;
+        }
+        return bitCount;
     }
 }

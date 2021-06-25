@@ -7,6 +7,7 @@ class Solution {
         // 只需要计算一半的数量
 //        n ≤ 10,000,因此不能排列或暴力获取
 //        k ≤ 10
+        // 加法相同,base case变化
         int ret = 0;
         int[][] dp = new int[n + 1][k + 1];
         for (int i = 1; i <= k; i++) {
