@@ -47,27 +47,34 @@ class Solution {
                     temp.addAll(arr[0].get(i));
                     temp.addAll(arr[1].get(j));
                     res.add(temp);
-                    if (!arr[0].get(i).isEmpty() || !arr[1].get(j).isEmpty()) {
-                        temp = new ArrayList<>();
-                        temp.addAll(arr[0].get(i));
-                        temp.addAll(arr[1].get(j));
-                        temp.add(root.val);
-                        res.add(temp);
-                    }
                     continue;
                 }
                 temp = new ArrayList<>();
                 temp.add(root.val);
-                temp.addAll(arr[0].get(i));
-                temp.addAll(arr[1].get(j));
-                res.add(temp);
-                temp = new ArrayList<>();
-                temp.add(root.val);
-                temp.addAll(arr[1].get(j));
-                temp.addAll(arr[0].get(i));
-                res.add(temp);
+                _solve(0, 0, arr[0].get(i), arr[1].get(j), temp, res);
             }
         }
         return res;
+    }
+
+    private void _solve(int indexA, int indexB, List<Integer> a, List<Integer> b, List<Integer> curr, List<List<Integer>> res) {
+        if (indexA == a.size() || indexB == b.size()) {
+            List<Integer> temp = new ArrayList<>(curr);
+            while (indexA < a.size()) {
+                temp.add(a.get(indexA));
+                indexA++;
+            }
+            while (indexB < b.size()) {
+                temp.add(b.get(indexB));
+                indexB++;
+            }
+            res.add(temp);
+            return;
+        }
+        curr.add(a.get(indexA));
+        _solve(indexA + 1, indexB, a, b, curr, res);
+        curr.set(curr.size() - 1, b.get(indexB));
+        _solve(indexA, indexB + 1, a, b, curr, res);
+        curr.remove(curr.size() - 1);
     }
 }
