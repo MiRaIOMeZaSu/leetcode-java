@@ -22,7 +22,7 @@ class Solution {
         total = m * 2 + n * 2 - 4;
         k = k % total;
 
-        HashSet<Integer> visit = new HashSet<>();
+        HashSet<String> visit = new HashSet<>();
         int[] curr = new int[]{start, start};
         int[] target = getIndex(start, curr[0], curr[1], m, n, k);
         do {
@@ -32,7 +32,7 @@ class Solution {
         } while (total != 0);
     }
 
-    private int _solve(int[] curr, boolean flag, int start, int num, int i, int j, int m, int n, int k, int count, HashSet<Integer> visit) {
+    private int _solve(int[] curr, boolean flag, int start, int num, int i, int j, int m, int n, int k, int count, HashSet<String> visit) {
         if (count == total) {
             return 0;
         }
@@ -40,7 +40,7 @@ class Solution {
         if (visit.contains(temp)) {
             return total - count;
         }
-        visit.add(num);
+        visit.add(curr[0] + "," + curr[1]);
         graph[i][j] = num;
         if (flag) {
             graph[curr[0]][curr[1]] = -1;
