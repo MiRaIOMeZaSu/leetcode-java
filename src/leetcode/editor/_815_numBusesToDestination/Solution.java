@@ -4,7 +4,7 @@ import java.util.*;
 
 class Solution {
     HashMap<Integer, List<Integer>> map = new HashMap<>();
-    HashMap<Integer, Integer> dp = new HashMap<>();
+    Set<Integer> visit = new HashSet<>();
     int targetPos;
     int[][] graph;
 
@@ -20,26 +20,38 @@ class Solution {
                 map.get(routes[i][j]).add(i);
             }
         }
-        dp.put(source, 0);
-        solve(source, 1);
-        if (!dp.containsKey(target)) {
+        visit.add(source);
+        // 应该使用广度优先算法
+        int index = 0;
+        List<Integer> curr, next;
+        curr = new LinkedList<>();
+        curr.add(source);
+        while (!curr.isEmpty() && !visit.contains(target)) {
+            next = new ArrayList<>();
+            for (int i = 0; i < curr.size(); i++) {
+                solve(curr.get(i), next);
+            }
+            curr = next;
+            index++;
+        }
+
+        if (!visit.contains(target)) {
             return -1;
         }
-        return dp.get(target);
+        return index;
     }
 
-    private void solve(int curr, int destinationNum) {
-        if (dp.containsKey(targetPos) && dp.get(targetPos) <= destinationNum) {
-            return;
-        }
+    private void solve(int curr, List<Integer> res) {
+        Set<Integer> next = new HashSet<>();
         List<Integer> list = map.get(curr);
         for (int i = 0; i < list.size(); i++) {
             int[] arr = graph[list.get(i)];
             for (int j = 0; j < arr.length; j++) {
                 int num = arr[j];
-                if (!dp.containsKey(num) || destinationNum < dp.get(num)) {
-                    dp.put(num, destinationNum);
-                    solve(num, destinationNum + 1);
+                if (!visit.contains(num) && !next.contains(num)) {
+                    next.add(num);
+                    res.add(num);
+                    visit.add(num);
                 }
             }
         }
