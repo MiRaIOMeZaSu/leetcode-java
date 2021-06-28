@@ -7,10 +7,13 @@ class Solution {
     Set<Integer> visit = new HashSet<>();
     int targetPos;
     int[][] graph;
+    boolean[] routesUsed;
 
     public int numBusesToDestination(int[][] routes, int source, int target) {
         // 实时更新相应站点的所有趟次
+        // 应该通过routes建立连接,可以从任意一边斩断两边的联系
         graph = routes;
+        routesUsed = new boolean[routes.length];
         targetPos = target;
         for (int i = 0; i < routes.length; i++) {
             for (int j = 0; j < routes[i].length; j++) {
@@ -45,7 +48,12 @@ class Solution {
         Set<Integer> next = new HashSet<>();
         List<Integer> list = map.get(curr);
         for (int i = 0; i < list.size(); i++) {
-            int[] arr = graph[list.get(i)];
+            int index = list.get(i);
+            if (routesUsed[index]) {
+                continue;
+            }
+            routesUsed[index] = true;
+            int[] arr = graph[index];
             for (int j = 0; j < arr.length; j++) {
                 int num = arr[j];
                 if (!visit.contains(num) && !next.contains(num)) {
