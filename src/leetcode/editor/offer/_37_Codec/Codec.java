@@ -1,8 +1,7 @@
 package leetcode.editor.offer._37_Codec;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 class TreeNode {
@@ -51,37 +50,32 @@ public class Codec {
         //  var left = (temp + 1) * 2 - 1 +
         // 此时i为当前pos的层数
         int[] res = new int[]{father - 1, left - 1, right - 1};
-        arr.set(pos, res);
+        arr.set(pos - 1, res);
         return res;
     }
 
-    private void solve(TreeNode root, int pos_root, List<String> list) {
-        while (list.size() < pos_root + 1) {
-            list.add("null");
-        }
-        list.set(pos_root, String.valueOf(root.val));
+    private void solve(TreeNode root, int pos_root, Map<Integer, Integer> map) {
+        map.put(pos_root, root.val);
         int[] pos = getPos(pos_root);
         if (root.left != null) {
-            solve(root.left, pos[1], list);
+            solve(root.left, pos[1], map);
         }
         if (root.right != null) {
-            solve(root.right, pos[2], list);
+            solve(root.right, pos[2], map);
         }
     }
 
     // Encodes a tree to a single string.
     public String serialize(TreeNode root) {
         // 使用深度优先,每个父节点为子节点设置序号
-        List<String> ret = new ArrayList<>();
+        Map<Integer, Integer> map = new HashMap<>();
         if (root != null) {
-            solve(root, 0, ret);
+            solve(root, 0, map);
         }
         String string = "";
-        for (int i = 0; i < ret.size(); i++) {
-            string += ret.get(i);
-            if (i != ret.size() - 1) {
-                string += ",";
-            }
+        for (Integer key : map.keySet()) {
+            string += String.valueOf(key) + "|" + String.valueOf(map.get(key));
+            string += ",";
         }
         return string;
         //  return ret.toLocaleString();
@@ -91,26 +85,32 @@ public class Codec {
     public TreeNode deserialize(String data) {
         // 并不需要json，直接用逗号分隔即可
         String[] list = data.split(",");
-        TreeNode[] nodeList = new TreeNode[list.length];
-        if (list.length == 0) {
-            return null;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < list.length; i++) {
+            String[] entry = list[i].split("\\|");
+            map.put(Integer.parseInt(entry[0]), Integer.parseInt(entry[1]));
         }
-        nodeList[0] = new TreeNode(Integer.parseInt(list[0]));
-        for (int i = 1; i < list.length; i++) {
-            if ("null".equals(list[i])) {
-                continue;
+        HashMap<Integer, TreeNode> nodeMap = new HashMap<>();
+        nodeMap.put(0, new TreeNode(map.get(0)));
+        Deque<Integer> q = new LinkedList<>();
+        q.add(0);
+        while (!q.isEmpty()) {
+            int pivot = q.poll();
+            int[] pos = getPos(pivot);
+            if (map.containsKey(pos[1])) {
+                TreeNode temp = new TreeNode(map.get(pos[1]));
+                nodeMap.get(pivot).left = temp;
+                nodeMap.put(pos[1], temp);
+                q.add(pos[1]);
             }
-            int[] pos = getPos(i);
-            boolean isLeft = ((i + 1) % 2 == 0);
-            TreeNode node = new TreeNode(Integer.parseInt(list[i]));
-            nodeList[i] = node;
-            if (isLeft) {
-                nodeList[pos[0]].left = node;
-            } else {
-                nodeList[pos[0]].right = node;
+            if (map.containsKey(pos[2])) {
+                TreeNode temp = new TreeNode(map.get(pos[2]));
+                nodeMap.get(pivot).right = temp;
+                nodeMap.put(pos[2], temp);
+                q.add(pos[2]);
             }
         }
-        return nodeList[0];
+        return nodeMap.get(0);
     }
 }
 
