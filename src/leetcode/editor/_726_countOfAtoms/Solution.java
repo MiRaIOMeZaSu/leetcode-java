@@ -1,5 +1,9 @@
 package leetcode.editor._726_countOfAtoms;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 class Solution {
     String string;
     int size;
@@ -8,47 +12,44 @@ class Solution {
     public String countOfAtoms(String formula) {
         // 线段法?
         // 栈
-        string = formula;
+        List<Integer> head = new ArrayList<>();
+        List<Integer> tail = new ArrayList<>();
+        List<Integer> nums = new ArrayList<>();
+        HashMap<String, Integer> map = new HashMap<>();
         size = formula.length();
-//        return solve();
-        return "";
-    }
-
-    private int solve() {
-        int res = 0;
-        int i = index;
+        int i = 0;
         while (i < size) {
-            if (string.charAt(i) == '(') {
-                index = i + 1;
-                int temp = solve();
-                int num = 0;
-                while (Character.isDigit(string.charAt(i))) {
-                    num *= 10;
-                    num += string.charAt(i);
-                    i++;
-                }
-                num = (num == 0 ? 1 : num);
-                res += temp * num;
-            } else if (string.charAt(i) == ')') {
-                index = i + 1;
-                return res;
-            } else if (Character.isUpperCase(string.charAt(i))) {
-                // 直接跳到下一个为止
+            if (Character.isUpperCase(formula.charAt(i))) {
+                int start = i;
                 i++;
-                while (Character.isLowerCase(string.charAt(i))) {
+                while (i < size && Character.isLowerCase(formula.charAt(i))) {
                     i++;
                 }
+                map.put(formula.substring(start, i), 0);
+            } else if (i < size && Character.isDigit(formula.charAt(i))) {
+                i++;
+            } else if (formula.charAt(i) == '(') {
+                head.add(i);
+                i++;
+            } else if (formula.charAt(i) == ')') {
+                tail.add(i);
+                i++;
                 int num = 0;
-                while (Character.isDigit(string.charAt(i))) {
+                while (i < size && Character.isDigit(formula.charAt(i))) {
                     num *= 10;
-                    num += string.charAt(i);
+                    num += formula.charAt(i);
                     i++;
                 }
-                num = (num == 0 ? 1 : num);
-                res += num;
+                if (num == 0) {
+                    num = 1;
+                }
+                nums.add(num);
             }
-            i++;
         }
-        return res;
+        // 从此开始线段划分
+        for (i = 0; i < nums.size(); i++) {
+
+        }
+        return "";
     }
 }
