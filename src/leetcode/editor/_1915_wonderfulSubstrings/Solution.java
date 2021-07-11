@@ -9,7 +9,8 @@ class Solution {
         // 窗口?
         // 将奇偶映射成32位整数
         int size = word.length();
-        int range = 'j' - 'a' + 1;
+//        int range = 'j' - 'a' + 1;
+        int range = 10;
         int[] bits = new int[range];
         bits[0] = 1;
         int mask = 1;
@@ -20,7 +21,7 @@ class Solution {
         int preBit = 0;
         Map<Integer, Integer> map = new HashMap<>();
         int[] tail = new int[size];
-        int res = 0;
+        long res = 0;
         for (int i = size - 1; i >= 0; i--) {
             tail[i] = preBit ^ bits[word.charAt(i) - 'a'];
             preBit = tail[i];
