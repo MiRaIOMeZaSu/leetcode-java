@@ -8,6 +8,7 @@ public class Solution {
     class ListNode {
         char val;
         ListNode next;
+        ListNode pres;
 
         ListNode(char val) {
             this.val = val;
@@ -42,43 +43,38 @@ public class Solution {
         ListNode curr = head;
         for (int i = 0; i < size; i++) {
             curr.next = new ListNode(s.charAt(i));
+            curr.next.pres = curr;
             curr = curr.next;
         }
         curr = head.next;
-        int index = 0;
-        ListNode pres1 = head.next;
-        ListNode pres2 = head.next;
-        int count1 = 0;
-        int count2 = 0;
         int matchIndex = 0;
-        while (size >= otherSize && curr.next != null) {
+        while (size >= otherSize && curr != null) {
             int key = curr.val - start;
             matchIndex = dp[matchIndex][key];
             if (matchIndex == otherSize) {
                 // 此时完全匹配
-                pres1.next = curr.next;
-                size -= otherSize;
-                index -= otherSize + otherSize - 2;
-                if (index < 0) {
-                    index = 0;
+                ListNode pres1 = curr;
+                for (int i = 0; i < otherSize; i++) {
+                    pres1 = pres1.pres;
                 }
-                curr = pres2;
+                pres1.next = curr.next;
+                if (curr.next != null) {
+                    curr.next.pres = pres1;
+                }
+                size -= otherSize;
+                curr = pres1;
+                int count = 0;
+                while (count < otherSize - 2 && curr != head.next && curr.pres != null) {
+                    curr = curr.pres;
+                    count++;
+                }
+                if (curr.pres == null) {
+                    curr = head.next;
+                }
                 matchIndex = 0;
                 continue;
             }
             curr = curr.next;
-            index++;
-            if (count1 == otherSize) {
-                pres1 = pres1.next;
-            } else {
-                count1++;
-            }
-
-            if (count2 == otherSize * 2) {
-                pres2 = pres2.next;
-            } else {
-                count2++;
-            }
         }
         StringBuilder stringBuilder = new StringBuilder();
         curr = head.next;
@@ -91,7 +87,8 @@ public class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        solution.removeOccurrences("daabcbaabcbc",
-                "abc");
+        String res = solution.removeOccurrences("yjyjqnaxlbqnaxlbfss",
+                "yjqnaxlb");
+        System.out.println(res);
     }
 }
