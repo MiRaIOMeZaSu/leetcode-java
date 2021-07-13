@@ -22,7 +22,7 @@ class Solution {
         int size = buildings.length;
         Set<Integer> X_set = new HashSet<>();
         List<Integer> X_list = new ArrayList<>();
-        Map<Integer, List<Integer>[]> map = new HashMap<>();
+        Map<Integer, int[]> map = new HashMap<>();
         // 必须同时存储是左右位置
         for (int i = 0; i < size; i++) {
             int y = buildings[i][2];
@@ -33,12 +33,10 @@ class Solution {
                     X_list.add(x);
                 }
                 boolean isLeft = (j == 0);
-                map.computeIfAbsent(x, k -> new ArrayList[3]);
+                map.computeIfAbsent(x, k -> new int[]{-1,-1,-1});
                 int index = isLeft ? 0 : 1;
-                if (map.get(x)[index] == null) {
-                    map.get(x)[index] = new ArrayList<>();
-                }
-                map.get(x)[index].add(y);
+                int [] arr = map.get(x);
+                arr[index] = Math.max(arr[index],y);
             }
         }
         X_list.sort(Comparator.naturalOrder());
@@ -52,18 +50,16 @@ class Solution {
             int end = reflect.get(buildings[i][1]);
             for (int j = start; j < end; j++) {
                 int x = X_list.get(j);
-                if (map.get(x)[2] == null) {
-                    map.get(x)[2] = new ArrayList<>();
-                }
-                map.get(x)[2].add(y);
+                int [] arr = map.get(x);
+                arr[2] = Math.max(arr[2],y);
             }
         }
         for (int i = 0; i < X_list.size(); i++) {
             int key = X_list.get(i);
-            List<Integer>[] lists = map.get(key);
-            int max1 = getMax(lists[0]);
-            int max2 = getMax(lists[1]);
-            int max3 = Math.max(getMax(lists[2]), 0);
+            int[] arr = map.get(key);
+            int max1 = arr[0];
+            int max2 = arr[1];
+            int max3 = arr[2]==-1?0:arr[2];
             int y;
             if (max1 == max2 || Math.max(max1, max2) < max3 || max3 == max1 || max3 == max2) {
                 continue;
@@ -87,17 +83,6 @@ class Solution {
             temp.add(key);
             temp.add(y);
             result.add(temp);
-        }
-        return result;
-    }
-
-    private int getMax(List<Integer> list) {
-        int result = -1;
-        if (list == null) {
-            return result;
-        }
-        for (int j = 0; j < list.size(); j++) {
-            result = Math.max(list.get(j), result);
         }
         return result;
     }
