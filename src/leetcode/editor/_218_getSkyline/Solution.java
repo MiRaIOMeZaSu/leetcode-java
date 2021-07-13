@@ -61,33 +61,32 @@ class Solution {
         for (int i = 0; i < X_list.size(); i++) {
             int key = X_list.get(i);
             List<Integer>[] lists = map.get(key);
-            int maxY = 0;
-            if (lists[2] != null) {
-                maxY = getMax(lists[2]);
+            int max1 = getMax(lists[0]);
+            int max2 = getMax(lists[1]);
+            int max3 = Math.max(getMax(lists[2]), 0);
+            int y;
+            if (max1 == max2 || Math.max(max1, max2) < max3 || max3 == max1 || max3 == max2) {
+                continue;
+            }
+
+            if (max1 != -1 && max2 != -1) {
+                // 不相等且均存在
+                if (Math.min(max1, max2) > max3) {
+                    y = max1;
+                } else if (max3 > max1) {
+                    y = max3;
+                } else {
+                    y = max1;
+                }
+            } else if (max1 == -1) {
+                y = max3;
+            } else {
+                y = Math.max(max1, max2);
             }
             List<Integer> temp = new ArrayList<>();
-            if (lists[0] == null) {
-                // 在右边,选择第二大
-                int thisY = getMax(lists[1]);
-                if (thisY > maxY) {
-                    temp.add(key);
-                    temp.add(maxY);
-                    result.add(temp);
-                }
-            } else {
-                // 在左边,选择第一大
-                int max1 = getMax(lists[0]);
-                int max2 = getMax(lists[1]);
-                if (max1 == max2) {
-                    continue;
-                }
-                int thisY = Math.max(max1, max2);
-                if (thisY > maxY) {
-                    temp.add(key);
-                    temp.add(thisY);
-                    result.add(temp);
-                }
-            }
+            temp.add(key);
+            temp.add(y);
+            result.add(temp);
         }
         return result;
     }
@@ -105,6 +104,6 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        solution.getSkyline(new int[][]{{0, 2, 3}, {2, 5, 3}});
+        solution.getSkyline(new int[][]{{0, 3, 3}, {1, 5, 3}, {2, 4, 3}, {3, 7, 3}});
     }
 }
