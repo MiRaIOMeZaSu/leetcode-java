@@ -6,25 +6,25 @@ import java.util.Map;
 
 class Solution {
     int[] nums;
-    int[] prefix;
+    long[] prefix;
     int result = 1;
-    int k;
+    long k;
 
-    public int maxFrequency(int[] nums, int k) {
+    public int maxFrequency(int[] nums, long k) {
         this.nums = nums;
         this.k = k;
         int size = nums.length;
         Arrays.sort(nums);
-        int lastNum = 0;
+        long lastNum = 0;
         int count = 0;
-        prefix = new int[size];
+        prefix = new long[size];
         prefix[0] = nums[0];
         result = 1;
         for (int i = 0; i < size; i++) {
             if (i != 0) {
                 prefix[i] = prefix[i - 1] + nums[i];
             }
-            int num = nums[i];
+            long num = nums[i];
             if (lastNum != num) {
                 int start = i - count - 1;
                 if (start >= 0 && count != 0) {
@@ -34,31 +34,39 @@ class Solution {
                         // 开始往前寻找
                         int left = 0;
                         int right = start - 1;
+                        result = Math.max(result, count + 1);
                         getMiddle(left, right, start, lastNum, count);
                     }
                 }
                 lastNum = num;
+                result = Math.max(result, count);
                 count = 1;
             } else {
                 count++;
             }
         }
-        int start = size - 1 - count;
-        if (prefix[size - 1] + k >= nums[size - 1] * size) {
+        if (count == size) {
             return size;
         }
-        getMiddle(0, start - 1, start, nums[size - 1], count);
+        int start = size - 1 - count;
+        if (prefix[size - 1] + k >= nums[size - 1] * (long) size) {
+            return size;
+        }
+        if (start >= 0 && nums[start] != nums[size - 1] && nums[start] + k >= nums[size - 1]) {
+            result = Math.max(result, count + 1);
+            getMiddle(0, start - 1, start, nums[size - 1], count);
+        }
         return result;
     }
 
-    private void getMiddle(int left, int right, int start, int lastNum, int count) {
+    private void getMiddle(int left, int right, int start, long lastNum, int count) {
         if (left >= right) {
             return;
         }
         while (left < right) {
             int mid = (left + right) >> 1;
-            int total = prefix[start] - prefix[mid];
-            int suppose = (start - mid) * lastNum;
+            long total = prefix[start] - prefix[mid];
+            long suppose = (start - mid) * lastNum;
             if (total + k > suppose) {
                 right = mid;
             } else if (total + k < suppose) {
@@ -73,7 +81,7 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        int ret = solution.maxFrequency(new int[]{3, 9, 6}, 2);
+        long ret = solution.maxFrequency(new int[]{3, 9, 6}, 2);
         System.out.println(ret);
     }
 }
