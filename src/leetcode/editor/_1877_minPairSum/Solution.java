@@ -9,6 +9,7 @@ class Solution {
     List<int[]> list = new ArrayList<>();
     int index;
     long total = 0L;
+    TreeMap<Integer, Integer> treeMap;
 
     public int minPairSum(int[] nums) {
         size = nums.length;
@@ -24,6 +25,10 @@ class Solution {
             } else {
                 list.get(index)[1]++;
             }
+        }
+        treeMap = new TreeMap<>((o1, o2) -> o2 - o1);
+        for (int i = index; i >= 0; i--) {
+            treeMap.put(list.get(i)[0], list.get(i)[1]);
         }
         this.nums = nums;
         for (int i = 0; i < size; i++) {
@@ -49,10 +54,8 @@ class Solution {
     private boolean statisfy(int target) {
         long localTotal = total;
         int localSize = size;
-        TreeMap<Integer, Integer> map = new TreeMap<>((o1, o2) -> o2 - o1);
-        for (int i = index; i >= 0; i--) {
-            map.put(list.get(i)[0], list.get(i)[1]);
-        }
+
+        TreeMap<Integer, Integer> map = (TreeMap<Integer, Integer>) treeMap.clone();
         while (!map.isEmpty()) {
             Map.Entry<Integer, Integer> entry = map.firstEntry();
             Integer next = map.higherKey(entry.getKey());
