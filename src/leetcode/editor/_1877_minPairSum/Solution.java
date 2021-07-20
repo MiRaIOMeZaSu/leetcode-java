@@ -1,21 +1,31 @@
 package leetcode.editor._1877_minPairSum;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 class Solution {
     int[] nums;
     int size;
+    List<int[]> list = new ArrayList<>();
+    int index;
+    long total = 0L;
 
     public int minPairSum(int[] nums) {
+        size = nums.length;
         Arrays.sort(nums);
-        int size = nums.length;
-        this.size = size;
+        int last = nums[0];
+        list.add(new int[]{last, 1});
+        index = 0;
+        for (int i = 1; i < size; i++) {
+            if (nums[i] != last) {
+                last = nums[i];
+                list.add(new int[]{last, 1});
+                index++;
+            } else {
+                list.get(index)[1]++;
+            }
+        }
         this.nums = nums;
-        int total = 0;
         for (int i = 0; i < size; i++) {
             total += nums[i];
         }
@@ -37,28 +47,41 @@ class Solution {
     }
 
     private boolean statisfy(int target) {
-        TreeMap<Integer, Integer> map = new TreeMap<>();
-        for (int i = 0; i < size; i++) {
-            map.merge(nums[i], 1, Integer::sum);
+        long localTotal = total;
+        int localSize = size;
+        TreeMap<Integer, Integer> map = new TreeMap<>((o1, o2) -> o2 - o1);
+        for (int i = index; i >= 0; i--) {
+            map.put(list.get(i)[0], list.get(i)[1]);
         }
         while (!map.isEmpty()) {
             Map.Entry<Integer, Integer> entry = map.firstEntry();
+            Integer next = map.higherKey(entry.getKey());
+            if (next != null && next + entry.getKey() <= target) {
+                return true;
+            }
             int limit = target - entry.getKey() + 1;
-            Map.Entry<Integer, Integer> temp = map.lowerEntry(limit);
+            Map.Entry<Integer, Integer> temp = map.higherEntry(limit);
             if (temp == null) {
                 return false;
             }
             if (entry.getValue() > temp.getValue()) {
                 map.put(entry.getKey(), entry.getValue() - temp.getValue());
-//                entry.setValue(entry.getValue() - temp.getValue());
                 map.remove(temp.getKey());
+                localTotal -= (temp.getKey() + entry.getKey()) * temp.getValue();
+                localSize -= 2 * temp.getValue();
             } else if (entry.getValue() < temp.getValue()) {
                 map.put(temp.getKey(), temp.getValue() - entry.getValue());
-//                temp.setValue(temp.getValue() - entry.getValue());
                 map.remove(entry.getKey());
+                localTotal -= (temp.getKey() + entry.getKey()) * entry.getValue();
+                localSize -= 2 * entry.getValue();
             } else {
                 map.remove(entry.getKey());
                 map.remove(temp.getKey());
+                localTotal -= 2 * entry.getKey() * entry.getValue();
+                localSize -= 2 * entry.getValue();
+            }
+            if (localTotal > 0 && localTotal / localSize > target) {
+                return false;
             }
         }
         return true;
@@ -66,7 +89,7 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        int result = solution.minPairSum(new int[]{3, 5, 4, 2, 4, 6, 3, 5, 2, 3, 3, 5, 2, 3, 4, 2, 4, 6, 3, 52, 321, 451, 23, 567, 12, 5, 71, 24, 761, 2, 56, 6111, 2, 5, 6, 12, 4, 6, 8, 12, 6, 2, 6, 5, 1, 33, 6, 8, 45, 8, 6, 45, 37, 8435, 23, 67, 3});
+        int result = solution.minPairSum(new int[]{4, 1, 5, 1, 2, 5, 1, 5, 5, 4});
         System.out.println(result);
     }
 }
