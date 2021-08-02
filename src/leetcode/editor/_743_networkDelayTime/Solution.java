@@ -20,10 +20,9 @@ class Solution {
         Set<Integer> visit = new HashSet<>();
         Deque<Integer> queue = new LinkedList<>();
         int[] time = new int[n + 1];
-        for (int i = 0; i <= n; i++) {
+        for (int i = 1; i <= n; i++) {
             time[i] = -1;
         }
-        time[0] = 0;
         time[k] = 0;
         queue.add(k);
         visit.add(k);
@@ -45,9 +44,25 @@ class Solution {
                     visit.add(next[0]);
                 }
             }
+            // 重新寻找最小起点
+            if (queue.isEmpty()) {
+                int nextP = -1;
+                int nextT = Integer.MAX_VALUE;
+                for (int i = 1; i <= n; i++) {
+                    if (time[i] != -1 && !visit.contains(i)) {
+                        if (nextT > time[i]) {
+                            nextP = i;
+                            nextT = time[i];
+                        }
+                    }
+                }
+                if (nextP != -1) {
+                    queue.add(nextP);
+                }
+            }
         }
         int result = -1;
-        for (int i = 0; i <= n; i++) {
+        for (int i = 1; i <= n; i++) {
             if (i == k) {
                 continue;
             }
@@ -61,6 +76,7 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        solution.networkDelayTime(new int[][]{{3, 5, 78}, {2, 1, 1}, {1, 3, 0}, {4, 3, 59}, {5, 3, 85}, {5, 2, 22}, {2, 4, 23}, {1, 4, 43}, {4, 5, 75}, {5, 1, 15}, {1, 5, 91}, {4, 1, 16}, {3, 2, 98}, {3, 4, 22}, {5, 4, 31}, {1, 2, 0}, {2, 5, 4}, {4, 2, 51}, {3, 1, 36}, {2, 3, 59}}, 5, 5);
+        int ret = solution.networkDelayTime(new int[][]{{3, 5, 78}, {2, 1, 1}, {1, 3, 0}, {4, 3, 59}, {5, 3, 85}, {5, 2, 22}, {2, 4, 23}, {1, 4, 43}, {4, 5, 75}, {5, 1, 15}, {1, 5, 91}, {4, 1, 16}, {3, 2, 98}, {3, 4, 22}, {5, 4, 31}, {1, 2, 0}, {2, 5, 4}, {4, 2, 51}, {3, 1, 36}, {2, 3, 59}}, 5, 5);
+        System.out.println(ret);
     }
 }
