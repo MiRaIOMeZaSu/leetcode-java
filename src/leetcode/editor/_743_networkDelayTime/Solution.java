@@ -49,15 +49,14 @@ class Solution {
                 int nextP = -1;
                 int nextT = Integer.MAX_VALUE;
                 for (int i = 1; i <= n; i++) {
-                    if (time[i] != -1 && !visit.contains(i)) {
-                        if (nextT > time[i]) {
-                            nextP = i;
-                            nextT = time[i];
-                        }
+                    if (time[i] != -1 && !visit.contains(i) && nextT > time[i]) {
+                        nextP = i;
+                        nextT = time[i];
                     }
                 }
                 if (nextP != -1) {
                     queue.add(nextP);
+                    visit.add(nextP);
                 }
             }
         }
