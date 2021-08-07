@@ -6,30 +6,32 @@ import java.util.Set;
 class Solution {
     public boolean circularArrayLoop(int[] nums) {
         int size = nums.length;
-        boolean[] visit = new boolean[size];
         for (int i = 0; i < size; i++) {
-            if (visit[i]) {
+            if (nums[i] > 1000) {
                 continue;
             }
-            visit[i] = true;
             boolean isPositive = nums[i] > 0;
             int j = i + nums[i];
+            nums[i] = Integer.MAX_VALUE - i;
             j = control(j, size);
             if (i == j) {
                 continue;
             }
             while (true) {
+                if (nums[j] > 1000) {
+                    // 还需要判断长度
+                    if (nums[j] == Integer.MAX_VALUE - i) {
+                        return true;
+                    }
+                    break;
+                }
+
                 boolean temp = nums[j] > 0;
                 if (temp != isPositive) {
                     // 在此中断
                     break;
                 }
-                if (visit[j]) {
-                    // 还需要判断长度
-                    return true;
-                }
 
-                visit[j] = true;
                 // 用于下一次的标识
                 isPositive = temp;
 
@@ -38,6 +40,7 @@ class Solution {
                 if (nextJ == j) {
                     break;
                 }
+                nums[j] = Integer.MAX_VALUE - i;
                 j = nextJ;
             }
         }
@@ -45,9 +48,11 @@ class Solution {
     }
 
     private int control(int curr, int size) {
-        if (curr >= size) {
+        while (curr >= size) {
             curr -= size;
-        } else if (curr < 0) {
+        }
+
+        while (curr < 0) {
             curr += size;
         }
         return curr;
@@ -55,7 +60,7 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        boolean result = solution.circularArrayLoop(new int[]{-2, 1, -1, -2, -2});
+        boolean result = solution.circularArrayLoop(new int[]{-2, -3, -9});
         System.out.println(result);
     }
 }
