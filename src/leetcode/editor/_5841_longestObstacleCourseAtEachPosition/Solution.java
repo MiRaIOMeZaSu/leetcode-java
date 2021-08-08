@@ -1,23 +1,28 @@
 package leetcode.editor._5841_longestObstacleCourseAtEachPosition;
 
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
+
 class Solution {
     public int[] longestObstacleCourseAtEachPosition(int[] obstacles) {
         int size = obstacles.length;
         int[] result = new int[size];
         result[0] = 1;
+        TreeMap<Integer, Integer> map = new TreeMap<>((o1, o2) -> o2 - o1);
         int min = obstacles[0];
+        map.put(obstacles[0], 1);
         for (int i = 1; i < size; i++) {
             result[i] = 1;
             min = Math.min(min, obstacles[i - 1]);
             if (obstacles[i] < min) {
                 continue;
             }
-            for (int j = i - 1; j >= 0; j--) {
-                if (obstacles[i] >= obstacles[j]) {
-                    result[i] = result[j] + 1;
-                    break;
-                }
+            Map.Entry<Integer, Integer> entry = map.lowerEntry(obstacles[i] + 1);
+            if (entry != null) {
+                result[i] = entry.getValue() + 1;
             }
+            map.merge(obstacles[i], result[i], Integer::compareTo);
         }
         return result;
     }
