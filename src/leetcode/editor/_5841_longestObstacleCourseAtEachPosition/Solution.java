@@ -16,13 +16,22 @@ class Solution {
             result[i] = 1;
             min = Math.min(min, obstacles[i - 1]);
             if (obstacles[i] < min) {
+                Integer newValue = map.merge(obstacles[i], result[i], Integer::max);
                 continue;
             }
-            Map.Entry<Integer, Integer> entry = map.lowerEntry(obstacles[i] + 1);
+            Map.Entry<Integer, Integer> entry = map.higherEntry(obstacles[i] + 1);
             if (entry != null) {
                 result[i] = entry.getValue() + 1;
+                for (int j = i - 1; j >= 0; j--) {
+                    if (obstacles[j] == entry.getKey()) {
+                        break;
+                    }
+                    if (obstacles[j] <= obstacles[i]) {
+                        result[i] = Math.max(result[i], result[j] + 1);
+                    }
+                }
             }
-            map.merge(obstacles[i], result[i], Integer::compareTo);
+            Integer newValue = map.merge(obstacles[i], result[i], Integer::max);
         }
         return result;
     }
