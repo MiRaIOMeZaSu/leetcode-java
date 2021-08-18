@@ -1,4 +1,4 @@
-package leetcode.editor.newcoder.baidu2021javaNo2_22;
+package leetcode.editor.nowcoder.baidu2021javaNo2_22;
 
 import java.util.LinkedList;
 import java.util.Queue;
