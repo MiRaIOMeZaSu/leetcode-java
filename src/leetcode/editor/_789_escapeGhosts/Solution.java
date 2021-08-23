@@ -15,8 +15,8 @@ class Solution {
         this.ghosts = ghosts;
         m = target[1];
         n = target[0];
-        int toPi = 0;
-        int toPj = 0;
+        int toPi = Math.min(m, 0);
+        int toPj = Math.min(n, 0);
         for (int i = 0; i < ghosts.length; i++) {
             toPi = Math.min(toPi, ghosts[i][0]);
             toPj = Math.min(toPj, ghosts[i][1]);
@@ -27,8 +27,10 @@ class Solution {
             ghosts[i][0] -= toPi;
             ghosts[i][1] -= toPj;
         }
-        graph = new int[m - toPi][n - toPj];
-        visit = new int[m - toPi][n - toPj];
+        m += -toPi + 1;
+        n += -toPj + 1;
+        graph = new int[m][n];
+        visit = new int[m][n];
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 graph[i][j] = Integer.MAX_VALUE;
@@ -38,8 +40,14 @@ class Solution {
         for (int i = 0; i < ghosts.length; i++) {
             draw(ghosts[i][0], ghosts[i][1], 0);
         }
-        target[0] -=toPi;
-        target[1] -=toPj;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                System.out.print(graph[i][j] + " ");
+            }
+            System.out.println();
+        }
+        target[0] -= toPi;
+        target[1] -= toPj;
         return solve(-toPi, -toPj, 0);
     }
 
@@ -85,6 +93,6 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        System.out.println(solution.escapeGhosts(new int[][]{{5,0},{-10,-2},{0,-5},{-2,-2},{-7,1}}, new int[]{7,7}));
+        System.out.println(solution.escapeGhosts(new int[][]{{-1, 2}, {0, 1}, {-2, 3}, {0, 1}, {-5, 0}}, new int[]{-2, 0}));
     }
 }
