@@ -1,6 +1,8 @@
 package leetcode.editor.contest._5856_minSessions;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 class Solution {
     int[] tasks;
@@ -15,10 +17,12 @@ class Solution {
         int size = tasks.length;
         int total = 0;
         int right = size;
+        boolean flag = true;
         for (int i = 0; i < size; i++) {
             total += tasks[i];
-            if (total > sessionTime && right == size) {
+            if (total > sessionTime && flag) {
                 right -= (i - 1);
+                flag = false;
             }
         }
         if (total <= sessionTime) {
@@ -48,7 +52,13 @@ class Solution {
         if (index == tasks.length) {
             return true;
         }
+        Set<Integer> set = new HashSet<>();
         for (int i = 0; i < boxSize; i++) {
+            if (!set.contains(handle[i])) {
+                set.add(handle[i]);
+            } else {
+                continue;
+            }
             handle[i] += tasks[index];
             if (handle[i] <= sessionTime) {
                 if (solve(index + 1)) {
@@ -62,6 +72,6 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        solution.minSessions(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 11);
+        solution.minSessions(new int[]{9, 6, 9}, 14);
     }
 }
