@@ -5,7 +5,7 @@ import java.util.*;
 class Solution {
     List<Integer> list = new ArrayList<>();
     Map<Integer, List<Integer>> map = new HashMap<>();
-    Random r = new Random();
+    Random r = new Random(System.currentTimeMillis());
     int total = 0;
     int[] arr;
 
@@ -30,8 +30,8 @@ class Solution {
 
     public int pickIndex() {
         // 使用二分法
-        int next = r.nextInt(total + 1);
-        if (next < arr[0]) {
+        int next = r.nextInt(total) + 1;
+        if (next <= arr[0]) {
             return randomChoice(map.get(list.get(0)));
         }
         int left = 1;
@@ -55,11 +55,11 @@ class Solution {
         if (l.size() == 1) {
             return l.get(0);
         }
-        return l.get(r.nextInt(l.size() - 1));
+        return l.get(r.nextInt(l.size()));
     }
 
     public static void main(String[] args) {
-        Solution obj = new Solution(new int[]{1, 3});
+        Solution obj = new Solution(new int[]{10,7,8,10});
         int param_1 = obj.pickIndex();
         int param_2 = obj.pickIndex();
         int param_3 = obj.pickIndex();
