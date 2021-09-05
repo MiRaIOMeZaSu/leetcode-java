@@ -18,10 +18,17 @@ class SolBase {
 
 class Solution extends SolBase {
     public int rand10() {
-        int temp = 0;
-        for (int i = 0; i < 10; i++) {
-            temp += rand7();
+        int pivot = 4;
+        do {
+            pivot = rand7();
+        } while (pivot == 4);
+        int a = 6;
+        do {
+            a = rand7();
+        } while (a > 5);
+        if (pivot < 4) {
+            return a;
         }
-        return temp / 7;
+        return a + 5;
     }
 }
