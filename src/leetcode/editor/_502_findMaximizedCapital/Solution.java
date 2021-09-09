@@ -1,79 +1,48 @@
 package leetcode.editor._502_findMaximizedCapital;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 class Solution {
     public int findMaximizedCapital(int k, int w, int[] profits, int[] capital) {
         // 资产为多少时选择了多少个项目时将获得多少利润
         // 进行排序
-        Map<Integer, List<Integer>> map = new HashMap<>();
-        List<Integer> list = new ArrayList<>();
-        int size = capital.length;
+        // 背包法?
+        // 直接插入排序
+        int size = profits.length;
+        int[][] table = new int[size][2];
         for (int i = 0; i < size; i++) {
-            if (!map.containsKey(capital[i])) {
-                map.put(capital[i], new ArrayList<>());
-                list.add(capital[i]);
-            }
-            map.get(capital[i]).add(profits[i]);
+            table[i][0] = capital[i];
+            table[i][1] = profits[i];
         }
-        list.sort(Comparator.naturalOrder());
-        if (list.get(0) > w) {
-            return 0;
-        }
-        // 背包法
-        int result = 0;
-        Map<Integer, Integer> kMap = new HashMap<>();
-        TreeSet<Integer> Ks = new TreeSet<>(((o1, o2) -> (o2 - o1)));
-        kMap.put(0, w);
-        Ks.add(0);
-        for (int i = 0; i < list.size(); i++) {
-            int key = list.get(i);
-            int len = map.get(key).size();
-            map.get(key).sort(Comparator.reverseOrder());
-            List<Integer> temp = map.get(key);
-            Map<Integer, Integer> nextMap = new HashMap<>();
-            List<Integer> nextKs = new ArrayList<>();
-            for (int j = 0; j < len; j++) {
-                if (j > 0) {
-                    temp.set(j, temp.get(j - 1) + temp.get(j));
-                }
-                // 上面部分过程中发生的重复,
-                Iterator<Integer> it = Ks.iterator();
-                while (it.hasNext()) {
-                    int currK = it.next();
-                    int currVal = kMap.get(currK);
-                    int nextK = currK + j + 1;
-                    if (nextK > k) {
-                        continue;
-                    }
-                    if (currVal < key) {
-                        continue;
-                    }
-                    Integer val = nextMap.get(nextK);
-                    int nextVal = currVal + temp.get(j);
-                    result = Math.max(result, nextVal);
-                    if (val == null || val < nextVal) {
-                        if (val == null) {
-                            nextKs.add(nextK);
-                        }
-                        nextMap.put(nextK, nextVal);
-                    }
-                }
+        Arrays.sort(table, (o1, o2) -> {
+            return o1[0] - o2[0];
+//            int diff = o1[0] - o2[0];
+//            if (diff != 0) {
+//                return diff;
+//            }
+//            return o2[1] - o1[1];
+        });
+        PriorityQueue<Integer> queue = new PriorityQueue<>((o1, o2) -> o2 - o1);
+        int currK = 0;
+        int result = w;
+        int currIndex = 0;
+        while (currK < k) {
+            while (currIndex < size && table[currIndex][0] <= result) {
+                queue.add(table[currIndex][1]);
+                currIndex++;
             }
-            Ks.addAll(nextKs);
-            for (int j = 0; j < nextKs.size(); j++) {
-                int Kkey = nextKs.get(j);
-                Integer pivot = kMap.get(Kkey);
-                Integer newVal = nextMap.get(Kkey);
-                if (pivot == null || pivot < newVal) {
-                    kMap.put(Kkey, newVal);
-                }
+            if (queue.isEmpty()) {
+                return result;
             }
+            result += queue.poll();
+            currK += 1;
         }
         return result;
     }
 
     public static void main(String[] args) {
         Solution solution = new Solution();
+        solution.findMaximizedCapital(2, 0, new int[]{1, 2, 3}, new int[]{0, 1, 1});
     }
 }
