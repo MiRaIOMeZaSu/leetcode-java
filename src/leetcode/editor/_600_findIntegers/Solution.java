@@ -25,23 +25,33 @@ class Solution {
             table[i][0] = table[i - 1][0] + table[i - 1][1];
             table[i][1] = table[i - 1][0];
         }
-
-        int pivot = 1;
-        int length = 0;
-        int result = table[size - 1][0] + table[size - 1][1] + 1;
-        while (pivot != last) {
+        // 前面的位数应该同样要保持不连续1
+        int pivot = last >> 1;
+        int length = size - 1;
+        boolean flag = true;
+        int result = table[size - 1][0] + table[size - 1][1];
+        while (pivot >= 1) {
             if ((n | pivot) == n) {
                 // 此位为1
                 result += table[length][0];
+                if (flag) {
+                    break;
+                }
+                flag = true;
+            } else {
+                flag = false;
             }
-            length++;
-            pivot = pivot << 1;
+            length--;
+            pivot = pivot >> 1;
+        }
+        if (pivot == 0) {
+            result += 1;
         }
         return result;
     }
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        solution.findIntegers(53);
+        solution.findIntegers(7);
     }
 }
