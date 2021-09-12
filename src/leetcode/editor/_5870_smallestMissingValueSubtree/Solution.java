@@ -1,12 +1,10 @@
 package leetcode.editor._5870_smallestMissingValueSubtree;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 class Node {
-    int[] children = new int[2];
+    List<Integer> children = new ArrayList<>();
     int count = 0;
     int index;
 
@@ -15,7 +13,7 @@ class Node {
     }
 
     public void addChild(int node) {
-        children[count] = node;
+        children.add(node);
         count++;
     }
 }
@@ -30,13 +28,6 @@ class Solution {
         int size = parents.length;
         nodes = new Node[size];
         this.nums = nums;
-        int[] sortedNums = new int[size];
-//        System.arraycopy(nums, 0, sortedNums, 0, size);
-//        Arrays.sort(sortedNums);
-//        int[] indexMap = new int[sortedNums[size - 1]];
-//        for (int i = 0; i < size; i++) {
-//            indexMap[sortedNums[i]] = i;
-//        }
         for (int i = 0; i < size; i++) {
             nodes[i] = new Node(i);
         }
@@ -58,13 +49,10 @@ class Solution {
         Node node = nodes[i];
         int max = 1;
         Set<Integer> set = new HashSet<>();
-        if (node.count > 0) {
-            set = solve(node.children[0]);
-            max = Math.max(max, ans[node.children[0]]);
-        }
-        if (node.count > 1) {
-            set.addAll(solve(node.children[1]));
-            max = Math.max(max, ans[node.children[1]]);
+        for (int j = 0; j < node.children.size(); j++) {
+            int child = node.children.get(j);
+            set.addAll(solve(child));
+            max = Math.max(max, ans[child]);
         }
         set.add(nums[i]);
         while (true) {
