@@ -11,64 +11,41 @@ class Solution {
     char blank = '*';
 
     public boolean checkValidString(String s) {
-        // 计算左右括号的数量差
-        // 使用回溯法,选择当做空的或选择当做括号
-        int[] count = new int[2];
+        // 使用动态规划,按长度递增
         int size = s.length();
         char[] chars = s.toCharArray();
+        boolean[][] dp = new boolean[size][size];
         for (int i = 0; i < size; i++) {
-            if (chars[i] == leftBracket) {
-                count[0]++;
-            } else if (chars[i] == blank) {
-            } else if (chars[i] == rightBracket) {
-                count[1]++;
+            if (chars[i] == blank) {
+                dp[i][i] = true;
             }
         }
-        return solve(chars, new LinkedList<>(), 0);
-    }
-
-    private boolean solve(char[] chars, Deque<Character> stack, int index) {
-        if (index >= chars.length && stack.isEmpty()) {
-            return true;
-        }
-        for (int i = index; i < chars.length; i++) {
-            if (chars[i] == leftBracket) {
-                stack.push(chars[i]);
-            } else if (chars[i] == rightBracket) {
-                if (!stack.isEmpty()) {
-                    stack.pop();
-                } else {
-                    return false;
-                }
-            } else if (chars[i] == blank) {
-                if (solve(chars, new LinkedList<>(stack), i + 1)) {
-                    return true;
-                }
-                Deque<Character> temp = new LinkedList<>(stack);
-                temp.push(leftBracket);
-                if (solve(chars, new LinkedList<>(temp), i + 1)) {
-                    return true;
-                }
-                if (!stack.isEmpty()) {
-                    temp = new LinkedList<>(stack);
-                    temp.pop();
-                    return solve(chars, new LinkedList<>(temp), i + 1);
-                }
-                return false;
+        for (int i = 0; i < size - 1; i++) {
+            if ((dp[i][i] || chars[i] == leftBracket) && (dp[i + 1][i + 1] || chars[i + 1] == rightBracket)) {
+                dp[i][i + 1] = true;
             }
         }
-        // 此时遍历到末尾
-        for (char ch : stack
-        ) {
-            if (ch != blank) {
-                return false;
+        for (int i = 3; i <= size; i++) {
+            for (int j = 0; j + i - 1 < size; j++) {
+                int start = j;
+                int end = i + j - 1;
+                if ((dp[start][start] || chars[start] == leftBracket) && (dp[end][end] || chars[end] == rightBracket) && dp[start + 1][end - 1]) {
+                    dp[start][end] = true;
+                    continue;
+                }
+                for (int p = start; p < end; p++) {
+                    if (dp[start][p] && dp[p + 1][end]) {
+                        dp[start][end] = true;
+                        break;
+                    }
+                }
             }
         }
-        return true;
+        return dp[0][size - 1];
     }
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        System.out.println(solution.checkValidString("*)"));
+        solution.checkValidString("((**)");
     }
 }
