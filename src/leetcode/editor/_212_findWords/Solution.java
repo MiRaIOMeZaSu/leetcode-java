@@ -90,11 +90,6 @@ class Solution {
     }
 
     private void solve(int i, int j, StringBuilder stringBuilder, Node curr) {
-        if (curr.isEnd) {
-            // 如果找到一个单词,将其移去
-            curr.isEnd = false;
-            ans.add(stringBuilder.toString());
-        }
         char ch = board[i][j];
         int index = Util.charToInt(ch);
         // 防止重复使用
@@ -104,6 +99,13 @@ class Solution {
         board[i][j] = whiteBlank;
         Node child = curr.getChild(index);
         if (child != null) {
+            if (child.isEnd) {
+                // 如果找到一个单词,将其移去
+                child.isEnd = false;
+                stringBuilder.append(ch);
+                ans.add(stringBuilder.toString());
+                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            }
             for (int k = 0; k < items.length; k++) {
                 int nextI = i + items[k][0];
                 int nextJ = j + items[k][1];
@@ -125,8 +127,8 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        List<String> list = solution.findWords(new char[][]{{'o', 'a', 'a', 'n'}, {'e', 't', 'a', 'e'}, {'i', 'h', 'k', 'r'}, {'i', 'f', 'l', 'v'}},
-                new String[]{"oath", "pea", "eat", "rain"});
+        List<String> list = solution.findWords(new char[][]{{'a'}},
+                new String[]{"a"});
         for (int i = 0; i < list.size(); i++) {
             System.out.println(list.get(i));
         }
