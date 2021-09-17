@@ -1,30 +1,51 @@
 package leetcode.editor._678_checkValidString;
 
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 class Solution {
+    char leftBracket = '(';
+    char rightBracket = ')';
+    char blank = '*';
+
     public boolean checkValidString(String s) {
-        Map<Character, Integer> map = new HashMap<>();
-        map.put('(', 0);
-        map.put(')', 1);
-        map.put('*', 2);
+        // 使用动态规划,按长度递增
         int size = s.length();
-        int[][] fore = new int[s.length()][3];
-        int[][] tail = new int[s.length()][3];
-        fore[0][map.get(s.charAt(0))] += 1;
-        for (int i = 1; i < s.length(); i++) {
-            for (int j = 0; j < 3; j++) {
-                fore[i][j] = fore[i - 1][j];
+        char[] chars = s.toCharArray();
+        boolean[][] dp = new boolean[size][size];
+        for (int i = 0; i < size; i++) {
+            if (chars[i] == blank) {
+                dp[i][i] = true;
             }
-            fore[i][map.get(s.charAt(i))]++;
         }
-        for (int i = size - 2; i >= 0; i--) {
-            for (int j = 0; j < 3; j++) {
-                fore[i][j] = fore[i - 1][j];
+        for (int i = 0; i < size - 1; i++) {
+            if ((dp[i][i] || chars[i] == leftBracket) && (dp[i + 1][i + 1] || chars[i + 1] == rightBracket)) {
+                dp[i][i + 1] = true;
             }
-            fore[i][map.get(s.charAt(i))]++;
         }
-        return false;
+        for (int i = 3; i <= size; i++) {
+            for (int j = 0; j + i - 1 < size; j++) {
+                int start = j;
+                int end = i + j - 1;
+                if ((dp[start][start] || chars[start] == leftBracket) && (dp[end][end] || chars[end] == rightBracket) && dp[start + 1][end - 1]) {
+                    dp[start][end] = true;
+                    continue;
+                }
+                for (int p = start; p < end; p++) {
+                    if (dp[start][p] && dp[p + 1][end]) {
+                        dp[start][end] = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return dp[0][size - 1];
+    }
+
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        solution.checkValidString("((**)");
     }
 }
