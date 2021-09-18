@@ -71,7 +71,7 @@ class Solution {
                     ans.add(left);
                     left += wordLen;
                     String out = queue.poll();
-                    map.merge(out, -1, Integer::sum);
+                    map.merge(out, 1, Integer::sum);
                 }
             }
         }
@@ -80,8 +80,8 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        List<Integer> ans = solution.findSubstring("wordgoodgoodgoodbestword",
-                new String[]{"word", "good", "best", "word"});
+        List<Integer> ans = solution.findSubstring("bcabbcaabbccacacbabccacaababcbb",
+                new String[]{"c", "b", "a", "c", "a", "a", "a", "b", "c"});
         for (int i = 0; i < ans.size(); i++) {
             System.out.println(ans.get(i));
         }
