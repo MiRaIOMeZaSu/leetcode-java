@@ -8,9 +8,11 @@ class Solution {
         int[] leftMax = new int[size];
         int[] dp = new int[size];
         int[] lenMax = new int[size];
-        dp[0] = 1;
-        lenMax[0] = 1;
-        leftMax[0] = nums[0];
+        for (int i = 0; i < size; i++) {
+            dp[i] = 1;
+            leftMax[i] = nums[i];
+            lenMax[i] = 1;
+        }
         int maxLen = 1;
         for (int i = 1; i < size; i++) {
             leftMax[i] = Math.max(nums[i], leftMax[i - 1]);
@@ -25,7 +27,7 @@ class Solution {
                     } else if (lenMax[j] + 1 == lenMax[i]) {
                         dp[i] += dp[j];
                     }
-                    if (leftMax[j] == nums[j]) {
+                    if (j - 1 >= 0 && leftMax[j] > leftMax[j - 1]) {
                         break;
                     }
                 } else if (nums[i] == nums[j]) {
@@ -34,7 +36,10 @@ class Solution {
                         dp[i] = dp[j];
                         break;
                     } else if (lenMax[j] == lenMax[i]) {
-                        dp[i] += dp[j];
+                        if (lenMax[j] != 1) {
+                            dp[i] += dp[j];
+                        }
+                        break;
                     } else {
                         break;
                     }
@@ -55,6 +60,6 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        System.out.println(solution.findNumberOfLIS(new int[]{1, 3, 5, 4, 7}));
+        System.out.println(solution.findNumberOfLIS(new int[]{1, 4, 4, 9, 1, 2, 5}));
     }
 }
