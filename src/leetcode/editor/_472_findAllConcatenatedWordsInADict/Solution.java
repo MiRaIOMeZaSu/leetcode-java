@@ -36,6 +36,7 @@ class Node {
 class Solution {
     List<String> ans = new ArrayList<>();
     Node root = new Node('a');
+    boolean[] visited;
 
     public List<String> findAllConcatenatedWordsInADict(String[] words) {
         //前缀树问题
@@ -64,6 +65,7 @@ class Solution {
             if (words[i].length() < minLen * 2) {
                 continue;
             }
+            visited = new boolean[words[i].length()];
             if (solve(words[i], 0, 0)) {
                 ans.add(words[i]);
             }
@@ -80,8 +82,11 @@ class Solution {
             char ch = word.charAt(i);
             Node next = curr.nodes[Util.charToInt(ch)];
             if (next != null) {
-                if (next.isEnd && solve(word, i + 1, count + 1)) {
-                    return true;
+                if (!visited[i] && next.isEnd) {
+                    if (solve(word, i + 1, count + 1)) {
+                        return true;
+                    }
+                    visited[i] = true;
                 }
                 curr = next;
             } else {
@@ -93,6 +98,6 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        solution.findAllConcatenatedWordsInADict(new String[]{"cat","dog","catdog"});
+        solution.findAllConcatenatedWordsInADict(new String[]{"cat", "dog", "catdog"});
     }
 }
