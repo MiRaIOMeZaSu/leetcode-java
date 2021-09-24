@@ -28,22 +28,34 @@ class Solution {
         if (head == null) {
             return null;
         }
-        Deque<Node> queue = new LinkedList<>();
+        // 使用递归算法
+        return solve(head)[0];
+    }
+
+    private Node[] solve(Node head) {
+        Node[] ans = new Node[2];
+        ans[0] = head;
         Node curr = head;
-        Node last = head;
-        while (!queue.isEmpty() || curr != null) {
-            if (curr == null) {
-                curr = queue.poll();
-                last.next = curr;
-                curr.prev = last;
-            }
-            last = curr;
+        while (curr != null) {
+            ans[1] = curr;
             if (curr.child != null) {
-                queue.add(curr.child);
+                Node[] temp = solve(curr.child);
+                curr.child = null;
+                Node next = curr.next;
+                if (next != null) {
+                    next.prev = temp[1];
+                    temp[1].next = next;
+                } else {
+                    ans[1] = temp[1];
+                }
+                curr.next = temp[0];
+                temp[0].prev = curr;
+                curr = next;
+            } else {
+                curr = curr.next;
             }
-            curr = curr.next;
         }
-        return head;
+        return ans;
     }
 
     public static void main(String[] args) {
@@ -54,6 +66,7 @@ class Solution {
         head.child = _2;
         head.next = _1;
         _1.prev = head;
-        solution.flatten(head);
+        Node ans = solution.flatten(head);
+        System.out.println(ans.val);
     }
 }
