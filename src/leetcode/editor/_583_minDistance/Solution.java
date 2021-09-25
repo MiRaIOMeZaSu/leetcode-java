@@ -51,6 +51,7 @@ class Solution {
                     if (longWord[j] == shortWord[i]) {
                         dp[i][0] = 1;
                         dp[i][1] = j;
+                        break;
                     }
                 }
             }
@@ -64,7 +65,7 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        System.out.println(solution.minDistance("leetcode",
-                "etco"));
+        System.out.println(solution.minDistance("dinitrophenylhydrazine",
+                "acetylphenylhydrazine"));
     }
 }
