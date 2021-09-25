@@ -1,6 +1,12 @@
 package leetcode.editor._583_minDistance;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 class Solution {
+    static final char a = 'a';
+
     public int minDistance(String word1, String word2) {
         // 直接寻找最长公共子序列
         int longSize, shortSize;
@@ -12,60 +18,46 @@ class Solution {
         shortSize = flag ? len2 : len1;
         longWord = flag ? word1.toCharArray() : word2.toCharArray();
         shortWord = flag ? word2.toCharArray() : word1.toCharArray();
-        int[][] dp = new int[shortSize][2];
-        int ans = 0;
+        Integer[] list = new Integer[26];
         for (int i = 0; i < longSize; i++) {
-            if (longWord[i] == shortWord[0]) {
-                dp[0][0] = 1;
-                dp[0][1] = i;
-                ans = 1;
-                break;
+            int index = longWord[i] - a;
+            if (list[index] == null) {
+                list[index] = i;
+                continue;
             }
+            list[index] = Math.min(i, list[index]);
         }
-        if (dp[0][0] == 0) {
-            dp[0][1] = -1;
+        int ans = 0;
+        int[][] dp = new int[shortSize][longSize];
+        boolean[] curr = new boolean[26];
+        int index = shortWord[0] - a;
+        curr[index] = true;
+        if (list[index] != null) {
+            for (int i = list[index]; i < longSize; i++) {
+                dp[0][i] = 1;
+            }
         }
         for (int i = 1; i < shortSize; i++) {
-            int minIndex = longSize - 1;
-            for (int j = i - 1; j >= 0; j--) {
-                if (dp[j][0] == 0) {
-                    continue;
-                }
-                if (dp[i][0] <= dp[j][0] + 1) {
-                    minIndex = Math.min(minIndex, dp[j][1]);
-                    for (int k = dp[j][1] + 1; k < longSize; k++) {
-                        if (longWord[k] == shortWord[i]) {
-                            if (dp[i][0] < dp[j][0] + 1) {
-                                dp[i][0] = dp[j][0] + 1;
-                                dp[i][1] = k;
-                            } else {
-                                dp[i][1] = Math.min(k, dp[i][1]);
-                            }
-                            break;
-                        }
-                    }
+            int longIndex = longWord[0] - a;
+            int shortIndex = shortWord[i] - a;
+            curr[shortIndex] = true;
+            if (curr[longIndex]) {
+                dp[i][0] = 1;
+            }
+            for (int j = 1; j < longSize; j++) {
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j]);
+                dp[i][j] = Math.max(dp[i][j - 1], dp[i][j]);
+                if (longWord[j] == shortWord[i]) {
+                    dp[i][j] = Math.max(dp[i - 1][j - 1] + 1, dp[i][j]);
                 }
             }
-            if (dp[i][0] == 0) {
-                for (int j = 0; j <= minIndex; j++) {
-                    if (longWord[j] == shortWord[i]) {
-                        dp[i][0] = 1;
-                        dp[i][1] = j;
-                        break;
-                    }
-                }
-            }
-            if (dp[i][0] == 0) {
-                dp[i][1] = -1;
-            }
-            ans = Math.max(ans, dp[i][0]);
         }
-        return longSize + shortSize - (ans * 2);
+        return longSize + shortSize - (dp[shortSize - 1][longSize - 1] * 2);
     }
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        System.out.println(solution.minDistance("dinitrophenylhydrazine",
-                "acetylphenylhydrazine"));
+        System.out.println(solution.minDistance("sea",
+                "eat"));
     }
 }
