@@ -1,6 +1,7 @@
 package leetcode.editor._437_pathSum;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Definition for a binary tree node.
@@ -46,23 +47,34 @@ class Solution {
         // 使用回溯法
         this.targetSum = targetSum;
         map.put(0, 1);
-        solve(root);
+        ans += solve(root).getOrDefault(targetSum,0);
         return ans;
     }
 
-    private void solve(TreeNode node) {
-        int targetKey = targetSum - node.val;
-        ans += map.getOrDefault(targetKey, 0);
-        map.merge(node.val, 1, Integer::sum);
+    private HashMap<Integer, Integer> solve(TreeNode node) {
+        if (node == null) {
+            return new HashMap<>();
+        }
+        HashMap<Integer, Integer> map = new HashMap<>();
         if (node.left != null) {
-            solve(node.left);
+            HashMap<Integer, Integer> map1 = solve(node.left);
+            ans += map1.getOrDefault(targetSum, 0);
+            Iterator<Integer> integerIterator = map1.keySet().iterator();
+            while (integerIterator.hasNext()) {
+                int key = integerIterator.next();
+                map.merge(key + node.val, map1.get(key), Integer::sum);
+            }
         }
         if (node.right != null) {
-            solve(node.right);
+            HashMap<Integer, Integer> map2 = solve(node.right);
+            ans += map2.getOrDefault(targetSum, 0);
+            Iterator<Integer> integerIterator = map2.keySet().iterator();
+            while (integerIterator.hasNext()) {
+                int key = integerIterator.next();
+                map.merge(key + node.val, map2.get(key), Integer::sum);
+            }
         }
-        int curr = map.merge(node.val, -1, Integer::sum);
-        if (curr == 0) {
-            map.remove(node.val);
-        }
+        map.merge(node.val, 1, Integer::sum);
+        return map;
     }
 }
