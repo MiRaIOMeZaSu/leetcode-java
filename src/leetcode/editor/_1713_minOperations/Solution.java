@@ -27,11 +27,10 @@ class Solution {
             }
             map.put(index, Math.min(i, map.get(index)));
         }
-        int ans = 0;
         int[][] dp = new int[shortSize][longSize];
-        Set<Integer> curr = new HashSet<>();
+        boolean[] curr = new boolean[Math.max(max(target), max(arr)) + 1];
         int index = shortWord[0];
-        curr.add(index);
+        curr[index] = true;
         if (map.containsKey(index)) {
             for (int i = map.get(index); i < longSize; i++) {
                 dp[0][i] = 1;
@@ -40,8 +39,8 @@ class Solution {
         for (int i = 1; i < shortSize; i++) {
             int longIndex = longWord[0];
             int shortIndex = shortWord[i];
-            curr.add(shortIndex);
-            if (curr.contains(longIndex)) {
+            curr[shortIndex] = true;
+            if (curr[longIndex]) {
                 dp[i][0] = 1;
             }
             for (int j = 1; j < longSize; j++) {
@@ -53,6 +52,16 @@ class Solution {
             }
         }
         return target.length - dp[shortSize - 1][longSize - 1];
+    }
+
+    private int max(int[] nums) {
+        int ans = Integer.MIN_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > ans) {
+                ans = nums[i];
+            }
+        }
+        return ans;
     }
 
     public static void main(String[] args) {
