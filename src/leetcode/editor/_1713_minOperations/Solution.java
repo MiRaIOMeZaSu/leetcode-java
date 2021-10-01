@@ -7,6 +7,7 @@ import java.util.Set;
 
 class Solution {
     public int minOperations(int[] target, int[] arr) {
+        // 一遍寻找?
         // 寻找最长公共子序列
         // 直接寻找最长公共子序列
         int longSize, shortSize;
@@ -27,31 +28,33 @@ class Solution {
             }
             map.put(index, Math.min(i, map.get(index)));
         }
-        int[][] dp = new int[shortSize][longSize];
-        boolean[] curr = new boolean[Math.max(max(target), max(arr)) + 1];
+        int[][] lastDp = new int[2][longSize];
+        Set<Integer> curr = new HashSet<>();
         int index = shortWord[0];
-        curr[index] = true;
+        curr.add(index);
         if (map.containsKey(index)) {
             for (int i = map.get(index); i < longSize; i++) {
-                dp[0][i] = 1;
+                lastDp[0][i] = 1;
             }
         }
         for (int i = 1; i < shortSize; i++) {
             int longIndex = longWord[0];
             int shortIndex = shortWord[i];
-            curr[shortIndex] = true;
-            if (curr[longIndex]) {
-                dp[i][0] = 1;
+            curr.add(shortIndex);
+            if (curr.contains(longIndex)) {
+                lastDp[1][0] = 1;
             }
             for (int j = 1; j < longSize; j++) {
-                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j]);
-                dp[i][j] = Math.max(dp[i][j - 1], dp[i][j]);
+                lastDp[1][j] = Math.max(lastDp[0][j], lastDp[1][j]);
+                lastDp[1][j] = Math.max(lastDp[1][j - 1], lastDp[1][j]);
                 if (longWord[j] == shortWord[i]) {
-                    dp[i][j] = Math.max(dp[i - 1][j - 1] + 1, dp[i][j]);
+                    lastDp[1][j] = Math.max(lastDp[0][j - 1] + 1, lastDp[1][j]);
                 }
             }
+            lastDp[0] = lastDp[1];
+            lastDp[1] = new int[longSize];
         }
-        return target.length - dp[shortSize - 1][longSize - 1];
+        return target.length - lastDp[0][longSize - 1];
     }
 
     private int max(int[] nums) {
@@ -67,9 +70,9 @@ class Solution {
     public static void main(String[] args) {
         Solution solution = new Solution();
         System.out.println(solution.minOperations(new int[]{
-                5, 1, 3
+                6,4,8,1,3,2
         }, new int[]{
-                9, 4, 2, 3, 4
+                4,7,6,2,3,8,6,1
         }));
     }
 }
