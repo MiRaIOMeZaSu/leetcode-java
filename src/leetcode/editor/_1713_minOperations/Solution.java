@@ -21,13 +21,19 @@ class Solution {
         for (int i = 0; i < arrSize; i++) {
             if (map.containsKey(arr[i])) {
                 int index = map.get(arr[i]);
-                int j = index - 1;
                 if (index == 0) {
                     dp[index] = 1;
+                    for (int j = index + 1; j < targetSize && dp[j] < 1; j++) {
+                        dp[j] = 1;
+                    }
+                    continue;
                 }
-                while (dp[index] < j + 2 && j >= 0) {
-                    dp[index] = Math.max(dp[index], dp[j] + 1);
-                    j--;
+                int next = dp[index - 1] + 1;
+                if (dp[index] < next) {
+                    dp[index] = next;
+                    for (int j = index + 1; j < targetSize && dp[j] < next; j++) {
+                        dp[j] = next;
+                    }
                 }
             }
         }
