@@ -1,9 +1,8 @@
 package leetcode.editor._1713_minOperations;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.sun.source.tree.Tree;
+
+import java.util.*;
 
 class Solution {
     public int minOperations(int[] target, int[] arr) {
@@ -17,29 +16,37 @@ class Solution {
         for (int i = 0; i < targetSize; i++) {
             map.put(target[i], i);
         }
-        int[] dp = new int[targetSize];
+        List<Integer> list = new ArrayList<>();
         for (int i = 0; i < arrSize; i++) {
             if (map.containsKey(arr[i])) {
-                int index = map.get(arr[i]);
-                if (index == 0) {
-                    dp[index] = 1;
-                    for (int j = index + 1; j < targetSize && dp[j] < 1; j++) {
-                        dp[j] = 1;
-                    }
-                    continue;
-                }
-                int next = dp[index - 1] + 1;
-                if (dp[index] < next) {
-                    dp[index] = next;
-                    for (int j = index + 1; j < targetSize && dp[j] < next; j++) {
-                        dp[j] = next;
+                list.add(arr[i]);
+            }
+        }
+        arrSize = list.size();
+        if (arrSize == 0) {
+            return targetSize;
+        }
+        for (int i = 0; i < arrSize; i++) {
+            arr[i] = list.get(i);
+        }
+        int[] dp = new int[Math.min(arrSize, targetSize) + 1];
+        for (int i = 0; i < dp.length; i++) {
+            dp[i] = Integer.MAX_VALUE;
+        }
+        int ans = 1;
+        dp[1] = map.get(arr[0]);
+        for (int i = 1; i < arrSize; i++) {
+            int currIndex = map.get(arr[i]);
+            for (int j = ans; j >= 0; j--) {
+                if (dp[j] <= currIndex) {
+                    if (dp[j] < currIndex) {
+                        dp[j + 1] = Math.min(dp[j + 1], currIndex);
+                        ans = Math.max(j + 1, ans);
+                        break;
                     }
                 }
             }
-        }
-        int ans = 0;
-        for (int i = 0; i < targetSize; i++) {
-            ans = Math.max(ans, dp[i]);
+            dp[1] = Math.min(dp[1], currIndex);
         }
         return targetSize - ans;
     }
