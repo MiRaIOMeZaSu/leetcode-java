@@ -1,27 +1,25 @@
 package leetcode.editor._150_evalRPN;
 
+import java.util.Deque;
+import java.util.LinkedList;
+
 class Solution {
     public int evalRPN(String[] tokens) {
         // 使用函数栈
-        return privateEvalRPN(tokens, 0, tokens.length - 1);
+        Deque<String> strings = new LinkedList<>();
+        int length = tokens.length;
+        for (int i = 0; i < length; i++) {
+            if (Character.isDigit(tokens[i].charAt(tokens[i].length() - 1))) {
+                strings.push(tokens[i]);
+            } else {
+                int b = Integer.parseInt(strings.pop());
+                int a = Integer.parseInt(strings.pop());
+                strings.push(String.valueOf(applyArithmetic(a, b, tokens[i])));
+            }
+        }
+        return Integer.parseInt(strings.pop());
     }
 
-    private int privateEvalRPN(String[] tokens, int start, int end) {
-        int length = end - start + 1;
-        if (length == 1) {
-            return Integer.parseInt(tokens[start]);
-        }
-        if (Character.isDigit(tokens[end - 1].charAt(tokens[end - 1].length() - 1))) {
-            return applyArithmetic(
-                    privateEvalRPN(tokens, start, end - 2),
-                    Integer.parseInt(tokens[end - 1]),
-                    tokens[end]);
-        }
-        return applyArithmetic(
-                Integer.parseInt(tokens[start]),
-                privateEvalRPN(tokens, start + 1, end - 1),
-                tokens[end]);
-    }
 
     private int applyArithmetic(int a, int b, String method) {
         if ("+".equals(method)) {
@@ -38,7 +36,7 @@ class Solution {
     public static void main(String[] args) {
         Solution solution = new Solution();
         System.out.println(solution.evalRPN(new String[]{
-                "4","-2","/","2","-3","-","-"
+                "4", "-2", "/", "2", "-3", "-", "-"
         }));
     }
 }
