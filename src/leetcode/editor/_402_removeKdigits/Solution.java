@@ -34,7 +34,7 @@ class Solution {
             if (chars[i] == zero) {
                 // 可以开始往前寻找非零数量
                 int count = 0;
-                for (int j = 0; j < i; j++) {
+                for (int j = index; j < i; j++) {
                     if (chars[j] != zero) {
                         count++;
                     }
@@ -83,6 +83,6 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        solution.removeKdigits("112", 1);
+        solution.removeKdigits("", 1000);
     }
 }
