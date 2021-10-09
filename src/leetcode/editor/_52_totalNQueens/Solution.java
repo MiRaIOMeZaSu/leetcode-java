@@ -8,14 +8,16 @@ import java.util.List;
 class Solution {
     int ans = 0;
     boolean[] rowVisit;
-    boolean[][] slashVisit;
+    boolean[][] slashVisit, yaSlashVisit;
     int globalN;
     Deque<int[]> test = new LinkedList<>();
+
     public int totalNQueens(int n) {
         // 经典而简单的回溯法
         // 重点是判断不满足条件的方法
         // 同样不能在同一条斜线上,只存储斜线的左上头部
         slashVisit = new boolean[n][n];
+        yaSlashVisit = new boolean[n][n];
         globalN = n;
         rowVisit = new boolean[n];
         // 只需返回存储的数量
@@ -37,13 +39,18 @@ class Solution {
                 int nCurrRow = flag ? currRow - currCol : 0;
                 if (!slashVisit[nCurrCol][nCurrRow]) {
                     // 此棋子可以落子
-                    rowVisit[i] = true;
-                    slashVisit[nCurrCol][nCurrRow] = true;
-                    test.push(new int[]{currCol,currRow});
-                    solve(n - 1);
-                    rowVisit[i] = false;
-                    test.pop();
-                    slashVisit[nCurrCol][nCurrRow] = false;
+                    int toleft = globalN - 1 - currRow;
+                    int yaCurrCol = currCol > toleft ? currCol - toleft : 0;
+                    int yaCurrRow = currCol > toleft ? globalN - 1 : currRow + currCol;
+                    if(!yaSlashVisit[yaCurrCol][yaCurrRow]){
+                        rowVisit[i] = true;
+                        slashVisit[nCurrCol][nCurrRow] = true;
+                        yaSlashVisit[yaCurrCol][yaCurrRow] = true;
+                        solve(n - 1);
+                        rowVisit[i] = false;
+                        slashVisit[nCurrCol][nCurrRow] = false;
+                        yaSlashVisit[yaCurrCol][yaCurrRow] = false;
+                    }
                 }
             }
         }
@@ -51,6 +58,6 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        solution.totalNQueens(4);
+        System.out.println(solution.totalNQueens(4));;
     }
 }
