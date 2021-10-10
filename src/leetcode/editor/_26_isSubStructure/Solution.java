@@ -1,6 +1,5 @@
 package leetcode.editor._26_isSubStructure;
 
-import com.sun.source.tree.Tree;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

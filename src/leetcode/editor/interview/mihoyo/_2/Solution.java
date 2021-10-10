@@ -1,5 +1,9 @@
 package leetcode.editor.interview.mihoyo._2;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+
 public class Solution {
     /**
      * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
@@ -7,12 +11,27 @@ public class Solution {
      * 截取字符串
      *
      * @param original string字符串
-     * @param count int整型
+     * @param count    int整型
      * @return string字符串
      */
 
     public String cutString(String original, int count) {
         // write code here
+//        StringReader stringReader = new StringReader(original);
+//
+//        try {
+//            int temp = stringReader.read();
+//            while (temp!=-1){
+//                temp = stringReader.read();
+//                System.out.println(temp);
+//            }
+//        } catch (Exception e) {
+//            return _solve(original, count);
+//        }
+        return _solve(original, count);
+    }
+
+    private String _solve(String original, int count) {
         StringBuilder stringBuilder = new StringBuilder();
         int size = original.length();
         int curr = 0;
@@ -35,6 +54,6 @@ public class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        solution.cutString("1{* 我ABC汉DEF", 6);
+        System.out.println(solution.cutString("1{* 我ABC汉DEF", 100));
     }
 }

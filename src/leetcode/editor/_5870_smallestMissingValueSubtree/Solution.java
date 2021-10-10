@@ -51,6 +51,8 @@ class Solution {
         Set<Integer> set = new HashSet<>();
         for (int j = 0; j < node.children.size(); j++) {
             int child = node.children.get(j);
+            // set换成数组
+            set.addAll(solve(child));
             set.addAll(solve(child));
             max = Math.max(max, ans[child]);
         }

@@ -3,7 +3,7 @@ package leetcode.editor._1117_H2O;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class H2O {
-//    private Object lock;
+    //    private Object lock;
     AtomicInteger H = new AtomicInteger(0);
     AtomicInteger O = new AtomicInteger(0);
     AtomicInteger outPutH = new AtomicInteger(0);
@@ -20,8 +20,8 @@ class H2O {
         synchronized (this) {
             H.incrementAndGet();
             this.notifyAll();
-            while ((H.get() + outPutH.get() < 2 || O.get() < 1)&&
-                    !(outPutH.get() < 2 && outPutO.get() == 0)) {
+            while ((H.get() + outPutH.get() < 2 || O.get() < 1) &&
+                    outPutH.get() >= 2 || outPutO.get() != 0) {
                 this.wait();
             }
             outPutH.incrementAndGet();
@@ -34,7 +34,8 @@ class H2O {
             O.incrementAndGet();
             this.notifyAll();
             while ((H.get() + outPutH.get() < 2 || O.get() < 1) &&
-                    !(outPutH.get() == 2 && outPutO.getAndIncrement() == 0)) {
+                    outPutH.decrementAndGet() != 2 || outPutO.getAndIncrement() != 0){
+                outPutH.incrementAndGet();
                 this.wait();
             }
             O.decrementAndGet();

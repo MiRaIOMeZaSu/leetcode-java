@@ -1,10 +1,11 @@
 package leetcode.editor._1115_FooBar;
 
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
 
 class FooBar {
     private int n;
-    private volatile boolean flag = false;
 
     public FooBar(int n) {
         this.n = n;
@@ -13,24 +14,18 @@ class FooBar {
     public void foo(Runnable printFoo) throws InterruptedException {
 
         for (int i = 0; i < n; i++) {
-            while (flag) {
-                Thread.yield();
-            }
+
             // printFoo.run() outputs "foo". Do not change or remove this line.
             printFoo.run();
-            flag = true;
         }
     }
 
     public void bar(Runnable printBar) throws InterruptedException {
 
         for (int i = 0; i < n; i++) {
-            while (!flag) {
-                Thread.yield();
-            }
+
             // printBar.run() outputs "bar". Do not change or remove this line.
             printBar.run();
-            flag = false;
         }
     }
 }

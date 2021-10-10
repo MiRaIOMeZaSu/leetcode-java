@@ -17,7 +17,7 @@ class Solution {
             table[index]++;
         }
         solve(0, "");
-        return ret.toArray(String[]::new);
+        return ret.toArray(new String[0]);
     }
 
     private void solve(int index, String string) {
