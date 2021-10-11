@@ -15,7 +15,6 @@ import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        // 简单的动态规划
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         String[] temp = bufferedReader.readLine().split(" ");
         int n = Integer.parseInt(temp[0]);
@@ -28,10 +27,21 @@ public class Main {
             orders[i][0] = i;
             orders[i][1] = base + weigth * 2;
         }
-        Arrays.sort(orders, ((o1, o2) -> o2[1] - o1[1]));
+        Arrays.sort(orders, ((o1, o2) -> {
+            int flag1 = o2[1] - o1[1];
+            if (flag1 != 0) {
+                return flag1;
+            }
+            return o1[0] - o2[0];
+        }));
         StringBuilder stringBuilder = new StringBuilder();
+        int[] arr = new int[m];
         for (int i = 0; i < m; i++) {
-            stringBuilder.append(orders[i][0]);
+            arr[i] = orders[i][0];
+        }
+        Arrays.sort(arr);
+        for (int i = 0; i < m; i++) {
+            stringBuilder.append(arr[i]);
             stringBuilder.append(" ");
         }
         System.out.println(stringBuilder.toString().trim());
