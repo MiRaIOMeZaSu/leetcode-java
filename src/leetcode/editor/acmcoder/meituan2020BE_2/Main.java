@@ -84,7 +84,6 @@ class Main {
     // 并发问题
     // 输出: 长度为n，奇数位为A，偶数位交替为B和C
     // 使用原子类
-    //
     int n;
     AtomicInteger atomicInteger = new AtomicInteger(1);
     AtomicBoolean atomicBoolean = new AtomicBoolean(false);
@@ -95,20 +94,31 @@ class Main {
     }      // 构造函数,n为中奖用户数
 
     public void bonus(PrizePool prizePool) throws InterruptedException {
-        if (atomicInteger.getAndIncrement() % 2 != 0) {
-            prizePool.send("A");
+        while (atomicInteger.get() <= n) {
+            if (atomicInteger.get() % 2 != 0) {
+                prizePool.send("A");
+                atomicInteger.incrementAndGet();
+            }
         }
     }  // 仅能打印A，表示发放积分
 
     public void coupon(PrizePool prizePool) throws InterruptedException {
-        if (atomicInteger.getAndIncrement() % 2 == 0 && !atomicBoolean.getAndSet(true)) {
-            prizePool.send("B");
+        while (atomicInteger.get() <= n) {
+            if (atomicInteger.get() % 2 == 0 && !atomicBoolean.get()) {
+                prizePool.send("B");
+                atomicInteger.incrementAndGet();
+                atomicBoolean.set(true);
+            }
         }
     }  // 仅能打印B，表示发放优惠券
 
     public void contribution(PrizePool prizePool) throws InterruptedException {
-        if (atomicInteger.getAndIncrement() % 2 == 0 && atomicBoolean.getAndSet(false)) {
-            prizePool.send("C");
+        while (atomicInteger.get() <= n) {
+            if (atomicInteger.get() % 2 == 0 && atomicBoolean.get()) {
+                prizePool.send("C");
+                atomicInteger.incrementAndGet();
+                atomicBoolean.set(false);
+            }
         }
     }  // 仅能打印C，表示发放贡献值
 
@@ -116,7 +126,7 @@ class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("");
-        String number = scanner.nextLine();
+        String number = "5";
         final PrizePool prizePool = new PrizePool();
         final Main reviewEncourage = new Main(Integer.valueOf(number));
         Thread bonusThread = new Thread(new Runnable() {
@@ -154,12 +164,10 @@ class Main {
         contributionThread.start();
     }
 
-    //    PrizePool类仅有一个send方法，实现如下：
+    // PrizePool类仅有一个send方法，实现如下：
     public static class PrizePool {
-
         void send(String input) {
             System.out.print(input);
         }
-
     }
 }
