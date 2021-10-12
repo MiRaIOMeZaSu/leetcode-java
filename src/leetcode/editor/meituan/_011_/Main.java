@@ -26,22 +26,22 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        int d;
-        int[][] count = new int[3][2];
+        long d;
+        long[][] count = new long[3][2];
         Scanner scanner = new Scanner(System.in);
         for (int i = 0; i < 3; i++) {
-            count[i][0] = scanner.nextInt();
+            count[i][0] = scanner.nextLong();
         }
-        d = scanner.nextInt();
+        d = scanner.nextLong();
         for (int i = 0; i < 3; i++) {
-            count[i][1] = scanner.nextInt();
+            count[i][1] = scanner.nextLong();
         }
-        int ans = 0;
-        int times = Math.min(d, count[0][0] + count[1][0] + count[2][0]);
-        Arrays.sort(count, ((o1, o2) -> o2[1] - o1[1]));
+        long ans = 0;
+        long times = Math.min(d, count[0][0] + count[1][0] + count[2][0]);
+        Arrays.sort(count, ((o1, o2) -> (int) (o2[1] - o1[1])));
         int index = 0;
         while (times > 0) {
-            int currUse = Math.min(times, count[index][0]);
+            long currUse = Math.min(times, count[index][0]);
             ans += currUse * count[index][1];
             times -= currUse;
             index++;
