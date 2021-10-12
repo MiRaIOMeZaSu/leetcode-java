@@ -33,14 +33,12 @@ package leetcode.editor.meituan._013_;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.PriorityQueue;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         // 输出的是E的数量减去F的最大数量
         // 前后缀存储最小的差值
         char E = 'E';
-        char F = 'F';
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         int size = Integer.parseInt(bufferedReader.readLine());
         String string = bufferedReader.readLine().trim();
@@ -55,26 +53,25 @@ public class Main {
                 prex[i] = prex[i - 1] - 1;
             }
         }
-        // 越小越好,允许重复
-        PriorityQueue<Integer> integers = new PriorityQueue<>();
-        integers.add(0);
+        // 使用单调栈替代优先队列(越小越好
         tail[size - 1] = chars[size - 1] == E ? 1 : -1;
-        integers.add(tail[size - 1]);
         for (int i = size - 2; i >= 0; i--) {
             if (chars[i] == E) {
                 tail[i] = tail[i + 1] + 1;
             } else {
                 tail[i] = tail[i + 1] - 1;
             }
-            integers.add(tail[i]);
+        }
+        int[] yaTail = new int[size];
+        yaTail[size - 1] = tail[size - 1];
+        for (int i = size - 2; i >= 0; i--) {
+            yaTail[i] = Math.min(tail[i], yaTail[i + 1]);
         }
         int sum = prex[size - 1];
         int ans = sum;
-        integers.remove(tail[0]);
         for (int i = 0; i < size - 1; i++) {
             ans = Math.max(sum - prex[i], ans);
-            integers.remove(tail[i + 1]);
-            ans = Math.max(ans, sum - prex[i] - integers.peek());
+            ans = Math.max(ans, sum - prex[i] - Math.min(0, yaTail[i + 1]));
         }
         System.out.print(ans);
     }
