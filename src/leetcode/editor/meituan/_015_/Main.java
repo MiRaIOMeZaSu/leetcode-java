@@ -56,6 +56,9 @@ public class Main {
     }
 
     private static void solve(int i, int j) {
+        if (cost[i][j] >= cost[xt - 1][yt - 1]) {
+            return;
+        }
         // 对于i和j,找到四周
         int timePivot = cost[i][j] % (ab[0][i][j] + ab[1][i][j]);
         List<int[]> list = new ArrayList<>();
