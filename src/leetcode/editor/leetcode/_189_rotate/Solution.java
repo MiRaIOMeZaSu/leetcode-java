@@ -9,35 +9,24 @@ class Solution {
         if (size == k) {
             return;
         }
-        if (size % k == 0) {
-            // 需要多次跳跃
-            // 每次都会产生循环
-            for (int i = 0; i < k; i++) {
-                int curr = nums[i];
-                int currIndex = i;
-                for (int j = 0; j < size / k; j++) {
-                    currIndex += k;
-                    if (currIndex >= size) {
-                        break;
-                    }
-                    int temp = nums[currIndex];
-                    nums[currIndex] = curr;
-                    curr = temp;
-                }
-                nums[i] = curr;
-            }
-        } else {
-            // 只需要一次跳跃
-            int curr = nums[0];
-            int currIndex = 0;
-            for (int i = 0; i < size - 1; i++) {
+        // 需要多次跳跃
+        // 假设每次都会产生循环
+        int count = 0;
+        for (int i = 0; i < k && count < size - 1; i++) {
+            int curr = nums[i];
+            int currIndex = i;
+            for (; count < size - 1; count++) {
                 currIndex += k;
                 currIndex %= size;
+                if (currIndex == i) {
+                    break;
+                }
                 int temp = nums[currIndex];
                 nums[currIndex] = curr;
                 curr = temp;
             }
-            nums[0] = curr;
+            nums[i] = curr;
+            count++;
         }
     }
 
