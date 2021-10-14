@@ -4,64 +4,51 @@ class Solution {
     public int search(int[] nums, int target) {
         // 在低谷中寻找数字(二分法)
         int size = nums.length;
+        // 对于数组中的数且left!=right,必然有nums[left] > nums[right]
         int left = 0;
         int right = size - 1;
+        if (target == nums[left]) {
+            return left;
+        }
+        if (target == nums[right]) {
+            return right;
+        }
+        boolean flag = target >= nums[left];
         while (left < right) {
             int mid = (left + right) >> 1;
             if (nums[mid] < target) {
-                if (nums[mid] < nums[mid + 1]) {
-                    int temp = solve(nums, mid + 1, right, target);
-                    if (temp != -1) {
-                        return temp;
+                if (nums[mid] < nums[0]) {
+                    if (flag) {
+                        right = mid - 1;
+                    } else {
+                        left = mid + 1;
                     }
-                    right = mid - 1;
                 } else {
-                    int temp = solve(nums, left, mid - 1, target);
-                    if (temp != -1) {
-                        return temp;
+                    if (flag) {
+                        left = mid + 1;
+                    } else {
+                        right = mid - 1;
                     }
-                    left = mid + 1;
                 }
             } else if (nums[mid] > target) {
-                if (nums[mid] < nums[mid + 1]) {
+                if (nums[mid] < nums[0]) {
                     right = mid - 1;
                 } else {
-                    left = mid + 1;
+                    if (flag) {
+                        right = mid - 1;
+                    } else {
+                        left = mid + 1;
+                    }
                 }
             } else {
                 return mid;
             }
         }
-        return -1;
-    }
-
-    private int solve(int[] nums, int left, int right, int target) {
-        boolean flag = nums[left] > nums[right];
-        while (left < right) {
-            int mid = (left + right) >> 1;
-            if (nums[mid] == target) {
-                return mid;
-            } else if (nums[mid] > target) {
-                if (flag) {
-                    // 递减
-                    left = mid + 1;
-                } else {
-                    right = mid - 1;
-                }
-            } else {
-                if (flag) {
-                    // 递减
-                    right = mid - 1;
-                } else {
-                    left = mid + 1;
-                }
-            }
-        }
-        return -1;
+        return nums[left] == target ? left : -1;
     }
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        solution.search(new int[]{4, 5, 6, 7, 0, 1, 2}, 0);
+        System.out.println(solution.search(new int[]{4, 5, 6, 7, 8, 1, 2, 3}, 8));
     }
 }
