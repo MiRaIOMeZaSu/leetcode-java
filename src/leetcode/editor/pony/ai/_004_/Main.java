@@ -26,14 +26,14 @@ public class Main {
         // 当前高度是确定的
         int[] ans = new int[size];
         for (int i = 0; i < size; i++) {
-            int gap1 = h - nums[i];
-            int len1 = i + 1;
+            long gap1 = h - nums[i];
+            long len1 = i + 1;
             for (int j = i + 1; j < size; j++) {
-                int len2 = j - i;
-                if (len2 * gap1 > nums[i] * len1) {
+                long len2 = j - i;
+                if (len2 * gap1 > (long)nums[i] * len1) {
                     break;
                 }
-                if (nums[i] * len1 - len2 * gap1 >= nums[j] * len1) {
+                if ((long)nums[i] * len1 - len2 * gap1 >= (long)nums[j] * len1) {
                     ans[j] = i + 1;
                 }
             }
