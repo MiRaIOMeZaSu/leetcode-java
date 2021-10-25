@@ -25,19 +25,19 @@ public class Main {
         // 红绿灯在最左边
         // 当前高度是确定的
         int[] ans = new int[size];
-        for (int i = 0; i < size; i++) {
-            long gap1 = h - nums[i];
+        for (int i = size - 1; i >= 0; i--) {
+            // 从后往前
             long len1 = i + 1;
-            for (int j = i + 1; j < size; j++) {
-                long len2 = j - i;
-                if (len2 * gap1 > (long)nums[i] * len1) {
+            long gap1 = h - nums[i];
+            for (int j = i - 1; j >= 0; j--) {
+                long len2 = i - j;
+                if ((long) nums[i] * len1 + gap1 * len2 <= (long) nums[j] * len1) {
+                    ans[i] = j + 1;
                     break;
-                }
-                if ((long)nums[i] * len1 - len2 * gap1 >= (long)nums[j] * len1) {
-                    ans[j] = i + 1;
                 }
             }
         }
+
         for (int i = 0; i < size; i++) {
             bufferedWriter.write(String.valueOf(ans[i]));
             bufferedWriter.write("\n");
