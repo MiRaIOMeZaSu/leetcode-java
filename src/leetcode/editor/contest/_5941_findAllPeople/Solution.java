@@ -41,6 +41,9 @@ class Solution {
     private void solve(int startPerson) {
         for (int i = 0; graph[startPerson] != null && i < graph[startPerson].size(); i++) {
             int[] meeting = graph[startPerson].get(i);
+            if (meeting[0] == 28 || meeting[1] == 28) {
+                System.out.println("!");
+            }
             int min = Math.min(time[meeting[0]], time[meeting[1]]);
             int max = Math.max(time[meeting[0]], time[meeting[1]]);
             if (min == 0) {
@@ -71,7 +74,6 @@ class Solution {
                 } else {
                     time[meeting[0]] = meeting[2] + 1;
                     solve(meeting[0]);
-                    return;
                 }
             }
         }
