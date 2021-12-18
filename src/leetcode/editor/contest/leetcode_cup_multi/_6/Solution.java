@@ -1,4 +1,4 @@
-package leetcode.editor.leetcode_cup_multi._6;
+package leetcode.editor.contest.leetcode_cup_multi._6;
 
 class Solution {
     int size;

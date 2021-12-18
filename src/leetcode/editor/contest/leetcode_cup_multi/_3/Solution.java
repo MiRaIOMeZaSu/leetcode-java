@@ -1,9 +1,7 @@
-package leetcode.editor.leetcode_cup_multi._3;
+package leetcode.editor.contest.leetcode_cup_multi._3;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 class Solution {
     public int[] volunteerDeployment(int[] finalCnt, long totalNum, int[][] edges, int[][] plans) {

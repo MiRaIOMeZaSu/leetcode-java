@@ -1,4 +1,4 @@
-package leetcode.editor._415_addStrings;
+package leetcode.editor.leetcode._415_addStrings;
 
 class Solution {
     public String addStrings(String num1, String num2) {

@@ -1,9 +1,7 @@
-package leetcode.editor.leetcode_cup._3;
+package leetcode.editor.contest.leetcode_cup._3;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 class Solution {
     char white = 'O';

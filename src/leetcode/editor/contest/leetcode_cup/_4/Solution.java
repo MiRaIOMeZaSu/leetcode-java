@@ -1,8 +1,4 @@
-package leetcode.editor.leetcode_cup._4;
-
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Comparator;
+package leetcode.editor.contest.leetcode_cup._4;
 
 class Solution {
     public int circleGame(int[][] toys, int[][] circles, int r) {

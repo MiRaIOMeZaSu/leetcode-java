@@ -1,4 +1,4 @@
-package leetcode.editor.leetcode_cup._1;
+package leetcode.editor.contest.leetcode_cup._1;
 
 import java.util.ArrayList;
 import java.util.HashMap;
