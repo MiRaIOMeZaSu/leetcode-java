@@ -1,159 +1,66 @@
-package leetcode.editor._327_countRangeSum;
+package leetcode.editor.leetcode._327_countRangeSum;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-class Tree {
-    int treeArr[];
-    int size;
-    int count;
-
-    Tree(int count) {
-        this.count = count;
-        size = count;
-        // 懒得考虑是2倍还是4倍
-        size *= 4;
-        treeArr = new int[size];
-    }
-
-    int getRangeCount(int currStart, int currEnd, int targetStart, int targetEnd, int k) {
-        if (currStart >= targetStart && currEnd <= targetEnd) {
-            return treeArr[k];
-        } else if (currStart > targetEnd || currEnd < targetStart) {
-            return 0;
-        }
-        int div = (currStart + currEnd) >> 1;
-        int a = getRangeCount(currStart, div, targetStart, targetEnd, k * 2 + 1);
-        int b = getRangeCount(div + 1, currEnd, targetStart, targetEnd, k * 2 + 2);
-        return a + b;
-    }
-
-    void _addNum(int currStart, int currEnd, int num, int k) {
-        if (num > currEnd || num < currStart) {
-            return;
-        }
-        treeArr[k] += 1;
-        if (currStart == currEnd) {
-            return;
-        }
-        int div = (currStart + currEnd) >> 1;
-        _addNum(currStart, div, num, k * 2 + 1);
-        _addNum(div + 1, currEnd, num, k * 2 + 2);
-    }
-
-    void addNum(int num) {
-        _addNum(0, count, num, 0);
-    }
-}
-
-class SpecialTree extends Tree {
-    HashMap<Long, Integer> map;
-
-    SpecialTree(int count, HashMap<Long, Integer> map) {
-        super(count);
-        this.map = map;
-    }
-
-    long _getRangeCountSpecial(long currStart, long currEnd, long targetStart, long targetEnd, int k) {
-        int currStartInteger = map.get(currStart);
-        int currEndInteger = map.get(currEnd);
-        int targetStartInteger = map.get(targetStart);
-        int targetEndInteger = map.get(targetEnd);
-        return getRangeCount(currStartInteger, currEndInteger, targetStartInteger, targetEndInteger, k);
-    }
-
-    long getRangeCountSpecial(long targetStart, long targetEnd) {
-        int targetStartInteger = map.get(targetStart);
-        int targetEndInteger = map.get(targetEnd);
-        return getRangeCount(0, count, targetStartInteger, targetEndInteger, 0);
-    }
-
-    long getLowerCount(long targetEnd) {
-        int targetEndInteger = map.get(targetEnd) - 1;
-        return getRangeCount(0, count, 0, targetEndInteger, 0);
-    }
-
-    long getHigherCount(long targetStart) {
-        int targetStartInteger = map.get(targetStart) + 1;
-        return getRangeCount(0, count, targetStartInteger, count, 0);
-    }
-
-    void addNumSpecial(long num) {
-        int numInteger = map.get(num);
-        _addNum(0, count, numInteger, 0);
-    }
-}
-
 class Solution {
-    int lower, upper;
-
     public int countRangeSum(int[] nums, int lower, int upper) {
-        this.upper = upper;
-        this.lower = lower;
-        // 遍历区间?
-        // 动态规划?
-        // 前缀和? - 前缀与后缀!(线段树!)
-        // 滑动窗口?
-        // 线段树?
-        int size = nums.length;
-        long[] pres = new long[size];
-        long[] tail = new long[size];
-        pres[0] = nums[0];
-        tail[size - 1] = nums[size - 1];
-        for (int i = 1; i < size; i++) {
-            pres[i] = pres[i - 1] + nums[i];
-            tail[size - i - 1] = tail[size - i] + nums[size - i - 1];
+        long s = 0;
+        long[] sum = new long[nums.length + 1];
+        for (int i = 0; i < nums.length; ++i) {
+            s += nums[i];
+            sum[i + 1] = s;
         }
-        long total = pres[size - 1];
-        // 使用线段树!(nums[i]的范围十分巨大)
-        // 使用特殊线段树
-        List<Long> arr = new ArrayList<>();
-        HashMap<Long, Integer> map = new HashMap<>();
-        int[] diff = new int[]{0, lower, upper};
-        for (int i = 0; i < pres.length; i++) {
-            for (int j = 0; j < 3; j++) {
-                long key = pres[i] - diff[j];
-                if (!map.containsKey(key)) {
-                    map.put(key, 0);
-                    arr.add(key);
+        return countRangeSumRecursive(sum, lower, upper, 0, sum.length - 1);
+    }
+
+    public int countRangeSumRecursive(long[] sum, int lower, int upper, int left, int right) {
+        if (left == right) {
+            return 0;
+        } else {
+            int mid = (left + right) / 2;
+            int n1 = countRangeSumRecursive(sum, lower, upper, left, mid);
+            int n2 = countRangeSumRecursive(sum, lower, upper, mid + 1, right);
+            int ret = n1 + n2;
+
+            // 首先统计下标对的数量
+            int i = left;
+            int l = mid + 1;
+            int r = mid + 1;
+            while (i <= mid) {
+                while (l <= right && sum[l] - sum[i] < lower) {
+                    l++;
+                }
+                while (r <= right && sum[r] - sum[i] <= upper) {
+                    r++;
+                }
+                ret += r - l;
+                i++;
+            }
+
+            // 随后合并两个排序数组
+            long[] sorted = new long[right - left + 1];
+            int p1 = left, p2 = mid + 1;
+            int p = 0;
+            while (p1 <= mid || p2 <= right) {
+                if (p1 > mid) {
+                    sorted[p++] = sum[p2++];
+                } else if (p2 > right) {
+                    sorted[p++] = sum[p1++];
+                } else {
+                    if (sum[p1] < sum[p2]) {
+                        sorted[p++] = sum[p1++];
+                    } else {
+                        sorted[p++] = sum[p2++];
+                    }
                 }
             }
-        }
-        arr.sort(Comparator.naturalOrder());
-        for (int i = 0; i < arr.size(); i++) {
-            map.put(arr.get(i), i);
-        }
-        SpecialTree tree = new SpecialTree(arr.size() + 1, map);
-        int ans = 0;
-        for (int i = 2; i < size; i++) {
-            tree.addNumSpecial(pres[i - 2]);
-            long temp = total - tail[i];
-            long left = temp - upper;
-            long right = temp - lower;
-            ans += tree.getRangeCountSpecial(left, right);
-        }
-        for (int i = 0; i < size - 1; i++) {
-            if (satisfy(pres[i])) {
-                ans++;
+            for (int j = 0; j < sorted.length; j++) {
+                sum[left + j] = sorted[j];
             }
-            if (satisfy(tail[i + 1])) {
-                ans++;
-            }
+            return ret;
         }
-        if (satisfy(total)) {
-            ans++;
-        }
-        return ans;
-    }
-
-    private boolean satisfy(long a) {
-        return a <= upper && a >= lower;
-    }
-
-    public static void main(String[] args) {
-        Solution solution = new Solution();
-        System.out.println(solution.countRangeSum(new int[]{-2, 5, -1}, -2, 2));
     }
 }
