@@ -10,7 +10,7 @@ class Solution {
         int size = nums.length;
         int k = -1;
         int[] tempNumCountKey = new int[size];
-        Map<Integer, Integer> counts = new HashMap<>();
+        Map<Integer, Integer> counts = new HashMap<>(size);
         for (int i = 0; i < size; i++) {
             if (counts.merge(nums[i], 1, Integer::sum) == 1) {
                 tempNumCountKey[counts.size() - 1] = nums[i];
@@ -19,11 +19,11 @@ class Solution {
         int distinctSize = counts.size();
         int[] numCountVal = new int[distinctSize];
         int[] numCountKey = new int[distinctSize];
-        for (int i = 0; i < distinctSize; i++) {
-            numCountVal[i] = counts.get(tempNumCountKey[i]);
-        }
         System.arraycopy(tempNumCountKey, 0, numCountKey, 0, distinctSize);
         Arrays.sort(numCountKey);
+        for (int i = 0; i < distinctSize; i++) {
+            numCountVal[i] = counts.get(numCountKey[i]);
+        }
         for (int i = 0; i < distinctSize; i++) {
             counts.put(numCountKey[i], i);
         }
@@ -40,8 +40,7 @@ class Solution {
                 }
                 copyCountVal[i] -= copyCountVal[0];
                 int pivot = copyCountVal[0] * 2;
-                copyCountVal[0] = 0;
-                for (int j = 1; j < distinctSize && pivot < distinctSize; j++) {
+                for (int j = 1; j < distinctSize && pivot < size; j++) {
                     if (copyCountVal[j] != 0) {
                         Integer targetIndex = counts.get(numCountKey[j] + currK * 2);
                         if (targetIndex == null) {
@@ -52,7 +51,6 @@ class Solution {
                         }
                         copyCountVal[targetIndex] -= copyCountVal[j];
                         pivot += copyCountVal[j] * 2;
-                        copyCountVal[j] = 0;
                     }
                 }
                 if (pivot == size) {
