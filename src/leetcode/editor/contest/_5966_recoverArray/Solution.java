@@ -36,7 +36,7 @@ class Solution {
                 int[] copyCountVal = new int[distinctSize];
                 System.arraycopy(numCountVal, 0, copyCountVal, 0, distinctSize);
                 if (copyCountVal[i] < copyCountVal[0]) {
-                    break;
+                    continue;
                 }
                 copyCountVal[i] -= copyCountVal[0];
                 int pivot = copyCountVal[0] * 2;
@@ -81,6 +81,6 @@ class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        solution.recoverArray(new int[]{11, 6, 3, 4, 8, 7, 8, 7, 9, 8, 9, 10, 10, 2, 1, 9});
+        solution.recoverArray(new int[]{36, 67, 13, 17, 14, 63, 69, 21, 45, 79, 8, 72, 64, 48, 23, 34, 58, 58, 76, 17, 14, 42, 58, 76, 94, 6, 46, 10, 98, 65, 39, 55, 88, 46, 32, 18, 18, 65, 79, 35, 59, 2, 14, 61, 4, 54, 68, 48, 41, 50, 26, 100, 80, 30, 92, 52, 30, 19, 2, 22, 96, 75, 100, 62, 83, 96, 62, 44, 45, 26, 41, 6});
     }
 }
