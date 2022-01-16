@@ -9,24 +9,11 @@ class Solution {
     private long n;
     private int size;
 
-    public static int min(int[] arr) {
-        int min = Integer.MAX_VALUE;
-        int size = arr.length;
-        for (int i = 0; i < size; i++) {
-            if (arr[i] < min) {
-                min = arr[i];
-            }
-        }
-        return min;
-    }
-
     public long maxRunTime(int n, int[] batteries) {
         this.n = n;
         this.batteries = batteries;
         // n的数量小于等于batteries的长度
-        long ans = 0;
         this.size = batteries.length;
-        // 优先使用电量更多的
         // 必须是n台同时,少了不行
         Arrays.sort(batteries);
         if (n == batteries.length) {
@@ -40,12 +27,11 @@ class Solution {
         for (int i = n; i < size; i++) {
             back += batteries[i];
         }
-        // 几秒之后最小的不会再是最小的?
-        // 等长的木棒!(x,木棒可以掰开!)
-        // 二分法?
+        // 等长的木棒问题!(木棒可以掰开!)
+        // 二分法
         long left = batteries[0];
         long right = ((front + back) / this.n);
-        ans = left;
+        long ans = left;
         while (left <= right) {
             long mid = (left + right) >> 1;
             if (satisfy(mid)) {
